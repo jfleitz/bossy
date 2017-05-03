@@ -10,15 +10,20 @@ import (
 
 func init() {
 	log.SetOutput(os.Stdout)
+
 }
 
 var game goflip.GoFlip
 
 func main() {
-
-	game.Init()
+	var p *puckChase
+	p = new(puckChase)
+	game.Observers = []goflip.Observer{p}
+	inWarmUpPeriod = false
 	game.TotalBalls = 3
-	game.Start(switchHandler)
+	game.BallInPlay = 0 //using this for GameOver for now
+	game.MaxPlayers = 0
+	game.Init(switchHandler)
 
 	for {
 		time.Sleep(1000 * time.Millisecond) //just keep sleeping
@@ -36,7 +41,22 @@ func switchHandler(sw goflip.SwitchEvent) {
 	switch sw.SwitchID {
 	case swOuthole:
 		//ball over
-		go ballOverControl()
+		log.Infoln("outhole: switch pressed")
+		if game.BallInPlay > 0 {
+			log.Infoln("outhole: ballinplay is", game.BallInPlay)
+			game.BallDrained()
+			log.Infoln("outhole: ball drained called")
+			if !inWarmUpPeriod {
+				log.Infoln("outhole: not in warm up period")
+				game.PlayerEnd()  //Calling this since we don't have a ball save?
+				ballOverControl() //maybe have this controlled by player end instead? register a method?
+			} else {
+				//go ahead and eject it again
+				game.SolenoidFire(solOuthole)
+			}
+
+		}
+
 	case swCredit:
 		//start game..make this more elegant
 		go creditControl()
@@ -87,12 +107,26 @@ func saucerControl() {
 
 func creditControl() {
 	game.FlipperControl(true)
+	game.MaxPlayers++ //add a player to the list
+
+	if !game.IsGameInPlay() {
+		game.Scores = make([]int, game.MaxPlayers)
+		game.NextUp() //to make it player 1
+		startWarmUpPeriod()
+	}
+	//	log.Infoln("checking outhole switch pressed")
+	//	if game.SwitchPressed(swOuthole) { //JAF BUG: if the game starts with the switch down, it is not detected
+	//		log.Infoln("outhole switch is pressed")
 	time.Sleep(1 * time.Second)
 	game.SolenoidFire(solOuthole)
-
+	//	} else {
+	//		log.Infoln("outhole switch is not pressed")
+	//	}
 }
 
 func ballOverControl() {
+
+	game.NextUp()
 	time.Sleep(1 * time.Second)
 	game.SolenoidFire(solOuthole)
 }
