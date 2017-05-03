@@ -44,7 +44,7 @@ const (
 	lmpLetterO               = 6
 	lmpLetterS1              = 7
 	lmpLetterS2              = 8
-	lmpLetterSY              = 9
+	lmpLetterY               = 9
 	lmpOvertimeLeftOfGoal    = 11
 	lmpGoalieWhiteSpot       = 12
 	lmpPointLaneWhiteSpot    = 13
@@ -71,6 +71,7 @@ const (
 	lmpGoalLight             = 45
 	lmpTopLeftStar           = 49
 	lmpSamePlayerShootAgain  = 51
+	lmpAllLamps              = 0
 )
 
 //Solenoids
@@ -82,4 +83,5 @@ const (
 	solLeftBumper  = 13
 	solRightBumper = 12
 	solFlippers    = 18
+	solQuestion    = 0 //Not sure what this is.
 )
