@@ -88,13 +88,25 @@ const (
 
 //stats constants
 const (
-	bipPuckCount   = "bipPuckCount"   //ball in progress puck count
-	totalPuckCount = "totalPuckCount" //total puck count for a player
-	bipGoalCount   = "bipGoalCount"   //ball in progress goal
-	totalGoalCount = "totalGoalCount" //total goal count for a player
+	bipPuckCount    = "bipPuckCount"    //ball in progress puck count
+	totalPuckCount  = "totalPuckCount"  //total puck count for a player
+	bipGoalCount    = "bipGoalCount"    //ball in progress goal
+	totalGoalCount  = "totalGoalCount"  //total goal count for a player
+	leftGoalCount   = "leftGoalCount"   //total left flipper goals (hattrick)
+	rightGoalCount  = "rightGoalCount"  //total right flipper goals (hattrack)
+	saucerGoalCount = "saucerGoalCount" //total saucer Goal Count (hattrick)
+	hatTrickFor     = "hatTrickFor"     //Some logic around this. 0=no goal counted. 1=Left Flipper, 2=Right Flipper, 3=Saucer. Set by the hattrick Observer. Used by the goalObserver.
+	hatTrickCount   = "hatTrickCount"   //total number of hat tricks recieved
+)
+
+//Feature constants
+const (
+	passedToLeft   = 1
+	passedToRight  = 2
+	passedToSaucer = 3
 )
 
 //observer events
 const (
-	choosePuck = -50
+	goalScored = -50
 )

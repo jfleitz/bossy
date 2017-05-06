@@ -27,11 +27,18 @@ func init() {
 var game goflip.GoFlip
 
 func main() {
-	var p *puckChase
-	var g *goalObserver
-	p = new(puckChase)
-	g = new(goalObserver)
-	game.Observers = []goflip.Observer{p, g}
+	//	var p *puckChase
+	//	var g *goalObserver
+	//	p = new(puckChase)
+	//	g = new(goalObserver)
+	game.Observers = []goflip.Observer{
+		new(puckChase),
+		new(goalObserver),
+		new(endOfBallBonus),
+		new(hatTrick),
+		new(lilcoLine),
+		new(overTimeObserver),
+	}
 
 	inWarmUpPeriod = false
 	game.TotalBalls = 3
