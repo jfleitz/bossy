@@ -64,8 +64,8 @@ func (p *goalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	game.AddScore(addScore)
 	setPlayerStat(game.CurrentPlayer, bipPuckCount, 0)
 
-	incPlayerStat(game.CurrentPlayer, bipGoalCount
-	incPlayerStat(game.CurrentPlayer,totalGoalCount)
+	incPlayerStat(game.CurrentPlayer, bipGoalCount)
+	incPlayerStat(game.CurrentPlayer, totalGoalCount)
 
 	//play a sound
 
