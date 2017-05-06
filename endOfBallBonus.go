@@ -40,18 +40,6 @@ func (p *endOfBallBonus) SwitchHandler(sw goflip.SwitchEvent) {
 
 /*BallDrained is called whenever a ball is drained on the playfield (Before PlayerEnd)*/
 func (p *endOfBallBonus) BallDrained() {
-
-}
-
-/*PlayerUp is called after the ball is launched from the Ball Trough for the next ball up
-playerID is the player that is now up*/
-func (p *endOfBallBonus) PlayerUp(playerID int) {
-
-}
-
-/*PlayerEnd is called after BallDrained. In a multiball game, this would be after the last
-BallDrained method call*/
-func (p *endOfBallBonus) PlayerEnd(playerID int) {
 	//number of goals is the number of 5000 point values
 	goalCount := getPlayerStat(game.CurrentPlayer, totalGoalCount)
 
@@ -60,6 +48,24 @@ func (p *endOfBallBonus) PlayerEnd(playerID int) {
 
 	//This is a compounded bonus right now (Hold Bonus). Thought we would try this out first before switching or adding an option
 	game.AddScore(goalCount * puckCount * 5000)
+}
+
+/*PlayerUp is called after the ball is launched from the Ball Trough for the next ball up
+playerID is the player that is now up*/
+func (p *endOfBallBonus) PlayerUp(playerID int) {
+
+}
+
+/*PlayerStart is called the very first time a player is playing (their first Ball1)
+ */
+func (p *endOfBallBonus) PlayerStart(playerID int) {
+
+}
+
+/*PlayerEnd is called after the very last ball for the player is over
+(after ball 3 for example)*/
+func (p *endOfBallBonus) PlayerEnd(playerID int) {
+
 }
 
 /*PlayerAdded is called after a player is added by the credit button, and after the GameStart event*/
