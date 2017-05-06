@@ -58,7 +58,21 @@ func (p *goalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	default:
 		return
 	}
+	//For Hat Trick counting:
+	goalfor := getPlayerStat(game.CurrentPlayer, hatTrickFor)
+	switch goalfor {
+	case passedToLeft:
+		incPlayerStat(game.CurrentPlayer, leftGoalCount)
+		break
+	case passedToRight:
+		incPlayerStat(game.CurrentPlayer, rightGoalCount)
+		break
+	case passedToSaucer:
+		incPlayerStat(game.CurrentPlayer, saucerGoalCount)
+		break
+	}
 
+	//For goal scoring:
 	addScore := 10000
 	addScore += 10000 * getPlayerStat(game.CurrentPlayer, bipPuckCount)
 	game.AddScore(addScore)
@@ -77,8 +91,8 @@ func (p *goalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 		game.SolenoidFire(solDropTargets)
 	}()
 
-	//send back a command over the switch handler channel to call on choosepuck
-	game.BroadcastEvent(goflip.SwitchEvent{SwitchID: choosePuck, Pressed: true})
+	//send back a command over the switch handler channel to call on choosepuck, hat trick determination, etc
+	game.BroadcastEvent(goflip.SwitchEvent{SwitchID: goalScored, Pressed: true})
 }
 
 /*BallDrained is called whenever a ball is drained on the playfield (Before PlayerEnd)*/
@@ -92,8 +106,14 @@ func (p *goalObserver) PlayerUp(playerID int) {
 	game.SolenoidFire(solDropTargets)
 }
 
-/*PlayerEnd is called after BallDrained. In a multiball game, this would be after the last
-BallDrained method call*/
+/*PlayerStart is called the very first time a player is playing (their first Ball1)
+ */
+func (p *goalObserver) PlayerStart(playerID int) {
+
+}
+
+/*PlayerEnd is called after the very last ball for the player is over
+(after ball 3 for example)*/
 func (p *goalObserver) PlayerEnd(playerID int) {
 
 }
