@@ -1,5 +1,16 @@
 package main
 
+/*
+TODO/Notes:
+Warm Up period..when this is going, all puck lights should be on (flashing).
+You collect each (which goes to fast flash, then back to slow flash)
+...so WarmUp period should control anything puck related (not have puckChase and warmUp communicate).
+This will make things neater/more maintainable in code.
+
+
+
+*/
+
 import (
 	"os"
 	"time"
@@ -17,8 +28,11 @@ var game goflip.GoFlip
 
 func main() {
 	var p *puckChase
+	var g *goalObserver
 	p = new(puckChase)
-	game.Observers = []goflip.Observer{p}
+	g = new(goalObserver)
+	game.Observers = []goflip.Observer{p, g}
+
 	inWarmUpPeriod = false
 	game.TotalBalls = 3
 	game.BallInPlay = 0 //using this for GameOver for now
