@@ -98,7 +98,7 @@ func (p *puckChase) SwitchHandler(sw goflip.SwitchEvent) {
 		break
 	case swBehindGoalLane:
 		break
-	case choosePuck:
+	case goalScored:
 		go p.chooseNextPuck()
 		return
 	default:
@@ -179,6 +179,14 @@ func (p *puckChase) PlayerUp(playerID int) {
 	//go p.chooseNextPuck()
 }
 
+/*PlayerStart is called the very first time a player is playing (their first Ball1)
+ */
+func (p *puckChase) PlayerStart(playerID int) {
+
+}
+
+/*PlayerEnd is called after the very last ball for the player is over
+(after ball 3 for example)*/
 func (p *puckChase) PlayerEnd(playerID int) {
 
 }
