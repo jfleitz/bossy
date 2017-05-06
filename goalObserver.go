@@ -6,7 +6,7 @@
 
 */
 
-package main //this will probably be package main in your app
+package main
 
 import (
 	"time"
