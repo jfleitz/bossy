@@ -110,10 +110,6 @@ func (p *hatTrick) hatTrickMonitor() {
 
 }
 
-func (p *hatTrick) startHatTrick(forID int) {
-
-}
-
 /*BallDrained is called whenever a ball is drained on the playfield (Before PlayerEnd)*/
 func (p *hatTrick) BallDrained() {
 
