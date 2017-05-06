@@ -85,3 +85,16 @@ const (
 	solFlippers    = 18
 	solQuestion    = 0 //Not sure what this is.
 )
+
+//stats constants
+const (
+	bipPuckCount   = "bipPuckCount"   //ball in progress puck count
+	totalPuckCount = "totalPuckCount" //total puck count for a player
+	bipGoalCount   = "bipGoalCount"   //ball in progress goal
+	totalGoalCount = "totalGoalCount" //total goal count for a player
+)
+
+//observer events
+const (
+	choosePuck = -50
+)

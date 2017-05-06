@@ -9,10 +9,10 @@ import (
 )
 
 type puckChase struct {
-	pucks             []puck //keep track of what pucks are lit on the playfield
-	mikebossyLights   []int
-	bossyLightCircle  []int
-	collectedByPlayer []int //keep track of how many pucks (i.e. how many bossy letters) per player
+	keepChoosingPuck bool   //set to true when chooseNextPuck is called. Set to False when the first switch is hit.
+	pucks            []puck //keep track of what pucks are lit on the playfield
+	mikebossyLights  []int  //This is a list of the MIKE BOSSY lampIDs
+	bossyLightCircle []int  //This is a list of the MIKE BOSSY lampIDs, but in the order of a circular sequence
 	//puckSwitches    []int
 	//puckLights      []int
 
@@ -54,7 +54,6 @@ func (p *puckChase) Init() {
 		lmpLetterY, lmpLetterS2, lmpLetterS1, lmpLetterO, lmpLetterB,
 	}
 
-	p.collectedByPlayer = make([]int, 4)
 }
 
 func (p *puckChase) clearPuckStates() {
@@ -66,15 +65,19 @@ func (p *puckChase) clearPuckStates() {
 }
 
 func (p *puckChase) SwitchHandler(sw goflip.SwitchEvent) {
+
 	if sw.Pressed == false {
+		if sw.SwitchID == swShooterLane { //If the ball just got launched in the shooter lane, then choose the next puck
+			go p.chooseNextPuck()
+		}
 		return
 	}
 
+	//some switch was hit, so we stop puck choosing:
+	p.keepChoosingPuck = false
+
 	//hard coding the switch statement here to be faster.
 	switch sw.SwitchID {
-	case swShooterLane:
-		go p.chooseNextPuck()
-		return
 	case swTopLeftLane:
 		break
 	case swTopMiddleLane:
@@ -95,6 +98,9 @@ func (p *puckChase) SwitchHandler(sw goflip.SwitchEvent) {
 		break
 	case swBehindGoalLane:
 		break
+	case choosePuck:
+		go p.chooseNextPuck()
+		return
 	default:
 		return
 	}
@@ -103,7 +109,6 @@ func (p *puckChase) SwitchHandler(sw goflip.SwitchEvent) {
 	for _, pk := range p.pucks {
 		if pk.switchID == sw.SwitchID && pk.selected {
 			log.Infoln("puckChase:Lit puck hit")
-			p.collectedByPlayer[game.CurrentPlayer]++ //They just hit the lit puck... need to add to the bossy letters and more score
 			game.LampOff(pk.lampID)
 			wasHit = true
 			break
@@ -114,13 +119,24 @@ func (p *puckChase) SwitchHandler(sw goflip.SwitchEvent) {
 		return
 	}
 
+	p.incPuckCount()
 	game.AddScore(1000)
-	//puck was hit. Light up the Mike Bossy light and choose another puck
+
 	go p.chooseNextPuck()
+}
+
+func (p *puckChase) incPuckCount() {
+	incPlayerStat(game.CurrentPlayer, bipPuckCount)
+	incPlayerStat(game.CurrentPlayer, totalPuckCount)
+}
+
+func (p *puckChase) getPuckCount() int {
+	return getPlayerStat(game.CurrentPlayer, bipPuckCount)
 }
 
 //Spin all of the letters, and then choose a spot on the playfield.
 func (p *puckChase) chooseNextPuck() {
+	p.keepChoosingPuck = true //since just called.
 	//pick a random number between 1-10
 	seed := rand.NewSource(time.Now().UnixNano())
 	rnd := rand.New(seed)
@@ -135,17 +151,18 @@ func (p *puckChase) chooseNextPuck() {
 	game.LampOff(p.mikebossyLights...)
 
 	//circle around Mike Bossy
-
-	for i := 0; i < 2; i++ {
-		for _, l := range p.bossyLightCircle {
-			game.LampOn(l)
-			time.Sleep(100 * time.Millisecond)
-			game.LampOff(l)
+	for p.keepChoosingPuck {
+		for i := 0; i < 2; i++ {
+			for _, l := range p.bossyLightCircle {
+				game.LampOn(l)
+				time.Sleep(100 * time.Millisecond)
+				game.LampOff(l)
+			}
 		}
 	}
 
 	//set the Mike Bossy lights and then light the next puck.
-	for i := 0; i < p.collectedByPlayer[game.CurrentPlayer]; i++ {
+	for i := 0; i < p.getPuckCount() && i < 10; i++ {
 		game.LampOn(p.mikebossyLights[i])
 	}
 
@@ -171,5 +188,9 @@ func (p *puckChase) GameOver() {
 }
 
 func (p *puckChase) GameStart() {
+
+}
+
+func (p *puckChase) PlayerAdded(playerID int) {
 
 }
