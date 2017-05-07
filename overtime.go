@@ -1,15 +1,22 @@
-/*This is a continuation of the game, and based only on time. We should count down the time too.*/
-/*Everything scores 1000 points, Goals score 22,000 points*/
+/*This is a continuation of the game, and based only on time. We should count down the time too.
+Everything scores 1000 points, Goals score 22,000 points
+
+Since this is a continuation, observer needs to be added last to the list
+(so that no observer is skipped in giving points
+*/
 
 package main //this will probably be package main in your app
 
 import (
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/jfleitz/goflip"
 )
 
 type overTimeObserver struct {
 	//add your variables for the observer here
+	otWasPlayed bool
 }
 
 /*the following line should be called to ensure that your observer DOES
@@ -67,9 +74,42 @@ func (p *overTimeObserver) PlayerAdded(playerID int) {
 into the GameOver mode*/
 func (p *overTimeObserver) GameOver() {
 
+	if p.otWasPlayed {
+		return //already played overtime, so just exit
+	}
+
+	p.otWasPlayed = true
+	game.BallInPlay = 4 //GoFlip would have set this to zero, which stops the game.. overriding to Ball 4
+
+	//Determine which player is up in overtime.
+	playerUp := 0
+	otSecs := 0
+	for i := 0; i < game.MaxPlayers; i++ {
+		if getPlayerStat(i, otSeconds) > otSecs {
+			playerUp = i
+		}
+	}
+
+	game.CurrentPlayer = playerUp
+	//let everyone know we are in overtime.
+	game.BroadcastEvent(goflip.SwitchEvent{SwitchID: inOvertime, Pressed: true})
+
+	//TODO: increment the time awarded onto the credit display here. For now, just simulate...
+
+	go func() {
+		for i := 0; i < otSecs; i++ {
+			log.Infof("OT Seconds for player %d:%d", playerUp, i)
+			time.After(300 * time.Millisecond)
+		}
+		//some sort of light sequence here?
+
+		//launch the ball. at this point the other observers had plenty of time to get ready.
+		game.SolenoidFire(solOuthole)
+	}()
+
 }
 
 /*GameStart is called whenever a new game is started*/
 func (p *overTimeObserver) GameStart() {
-
+	p.otWasPlayed = false
 }

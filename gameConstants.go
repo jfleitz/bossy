@@ -110,4 +110,5 @@ const (
 //observer events
 const (
 	goalScored = -50
+	inOvertime = -51
 )
