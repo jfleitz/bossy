@@ -37,6 +37,7 @@ func main() {
 		new(endOfBallBonus),
 		new(hatTrick),
 		new(lilcoLine),
+		new(collectOvertime),
 		new(overTimeObserver),
 	}
 

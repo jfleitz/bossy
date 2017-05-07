@@ -1,7 +1,5 @@
-/*Overtime awards. On the last ball, the overtime lights are lit.
-For each time you hit one, 1 second is added to the overtime.
-If there are more than one player playing, whomever has the
-higher overtime value gets the timed extra ball.*/
+/*This is a continuation of the game, and based only on time. We should count down the time too.*/
+/*Everything scores 1000 points, Goals score 22,000 points*/
 
 package main //this will probably be package main in your app
 
@@ -34,6 +32,7 @@ routine must be kept as fast as possible. Make use of go routines when necessary
 Any delay in this routine can cause issues with latency
 */
 func (p *overTimeObserver) SwitchHandler(sw goflip.SwitchEvent) {
+
 }
 
 /*BallDrained is called whenever a ball is drained on the playfield (Before PlayerEnd)*/

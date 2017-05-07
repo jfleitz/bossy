@@ -97,6 +97,7 @@ const (
 	saucerGoalCount = "saucerGoalCount" //total saucer Goal Count (hattrick)
 	hatTrickFor     = "hatTrickFor"     //Some logic around this. 0=no goal counted. 1=Left Flipper, 2=Right Flipper, 3=Saucer. Set by the hattrick Observer. Used by the goalObserver.
 	hatTrickCount   = "hatTrickCount"   //total number of hat tricks recieved
+	otSeconds       = "otSeconds"       //total number of OT seconds collected
 )
 
 //Feature constants
