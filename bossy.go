@@ -45,10 +45,14 @@ func main() {
 	game.TotalBalls = 3
 	game.BallInPlay = 0 //using this for GameOver for now
 	game.MaxPlayers = 0
+	initStats()
 	game.Init(switchHandler)
 
 	for {
 		time.Sleep(1000 * time.Millisecond) //just keep sleeping
+		game.SendStats()
+
+		log.Infoln("Still Looping ", time.Now)
 	}
 }
 
@@ -132,7 +136,7 @@ func creditControl() {
 	game.MaxPlayers++ //add a player to the list
 
 	if !game.IsGameInPlay() {
-		game.Scores = make([]int, game.MaxPlayers)
+		game.Scores = make([]int32, game.MaxPlayers)
 		game.NextUp() //to make it player 1
 		startWarmUpPeriod()
 	}
