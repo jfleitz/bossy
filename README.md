@@ -27,7 +27,7 @@ Check out the playfield layout on ipdb: http://www.ipdb.org/machine.cgi?id=1596
     * For the upper flipper, a goal must be scored within 2 seconds after the ball is ejected from the saucer to be counted toward the "Hat Trick count" of the upper flipper. 
     * For each Hat Trick (3 shots by the same flipper), 22,000 points is awarded. 
 
-* LILCO Line - This is to pay homage to the best hokcey line in NHL History; Bryan Trottier, Clark Gillies, and Mike Bossy forming the Long Island Lighting Company (4 consecutive Stanley Cup wins). Similar to Hat Trick, this is based on timing from the flipper inlane switches and the saucer switch. You must complete each within 5 seconds of each other. Once you do so, the Goal light will blink to signify you have LILCO Line ready. Hitting the goal will award you with 220,000 points.
+* Trio Grande - This is to pay homage to the best hokcey line in NHL History; Bryan Trottier, Clark Gillies, and Mike Bossy forming the Trio Grande (4 consecutive Stanley Cup wins). Similar to Hat Trick, this is based on timing from the flipper inlane switches and the saucer switch. You must complete each within 5 seconds of each other. Once you do so, the Goal light will blink to signify you have LILCO Line ready. Hitting the goal will award you with 220,000 points.
     * In any order, you must hit within 5 seconds of each other:
         * Either Left Flipper Inlane switch
         * Either Right Flipper Inlane switch
