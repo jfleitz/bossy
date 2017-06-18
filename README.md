@@ -9,6 +9,14 @@ The original roms cannot be found. There are a few "Bossy game roms" floating ou
 Check out the playfield layout on ipdb: http://www.ipdb.org/machine.cgi?id=1596
 
 ## Overview of Rules
+The playfield layout is very basic, like a hockey rink! You are the islanders. The defense (Must be penguins or bruins, since black and yellow) is the goalie, pop bumpers and kickers.
+
+The use of the white spots on the playfield is used for lighting up where to pass the puck (See "Pucks"). Hitting a lit "puck shot" awards another letter in the M-I-K-E B-O-S-S-Y bonus bank. You cash out the selected letters by scoring a goal. 
+
+Some Hockey player specific scoring has been added to, including Hat Trick (3 timed-goals from the same flipper with the same ball in play), and Trio Grande (Timed goal by using each flipper and the saucer) with the same ball in play.
+
+
+## More Detail of rules..
 * Pucks - The playfield has white spots. These spots are considered to be hockey pucks. Only one is lit at a time. When you "hit the puck", the next MIKE BOSSY letter is sequentially lit, and another puck location is chosen random. When choosing at random, the "MIKE BOSSY" lights are lit up in a circular fashion until the first target hit after 2 MIKE BOSSY Light sequences(1).
     * (1) This is to prevent someone from capturing the ball and seeing where the lit puck will be.
 
@@ -26,7 +34,6 @@ Check out the playfield layout on ipdb: http://www.ipdb.org/machine.cgi?id=1596
     * For the lower flippers, a goal must be scored within 3 seconds after the ball goes from one of the flipper inlanes to be counted toward the "Hat Trick count" for that flipper.
     * For the upper flipper, a goal must be scored within 2 seconds after the ball is ejected from the saucer to be counted toward the "Hat Trick count" of the upper flipper. 
     * For each Hat Trick (3 shots by the same flipper), 22,000 points is awarded. 
-
 
 * Trio Grande Line - This is to pay homage to the best hockey line in NHL History; Bryan Trottier, Clark Gillies, and Mike Bossy forming the Trio Grande line (4 consecutive Stanley Cup wins). Similar to Hat Trick, this is based on timing from the flipper inlane switches and the saucer switch. You must complete each within 5 seconds of each other. Once you do so, the Goal light will blink to signify you have Trio Grande ready. Hitting the goal will award you with 220,000 points.
     * In any order, you must hit within 5 seconds of each other:
