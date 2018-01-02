@@ -32,27 +32,33 @@ func main() {
 	//	p = new(puckChase)
 	//	g = new(goalObserver)
 	game.Observers = []goflip.Observer{
-		new(puckChase),
-		new(goalObserver),
-		new(endOfBallBonus),
-		new(hatTrick),
-		new(lilcoLine),
-		new(collectOvertime),
-		new(overTimeObserver),
+		new(bossyObserver),
+		//new(puckChase),
+		//new(goalObserver),
+		//new(endOfBallBonus),
+		//new(hatTrick),
+		//new(lilcoLine),
+		//new(collectOvertime),
+		//new(overTimeObserver),
+		new(warmUpPeriodObserver),
 	}
 
 	inWarmUpPeriod = false
+
+	//Set the game limitations here
 	game.TotalBalls = 3
-	game.BallInPlay = 0 //using this for GameOver for now
-	game.MaxPlayers = 0
+	game.MaxPlayers = 2
+
+	//set the game initalizations here
+	game.BallInPlay = 0
+	game.CurrentPlayer = 0
 	initStats()
 	game.Init(switchHandler)
 
 	for {
 		time.Sleep(1000 * time.Millisecond) //just keep sleeping
 		game.SendStats()
-
-		log.Infoln("Still Looping ", time.Now)
+		//log.Infoln("Still Looping ", time.Now)
 	}
 }
 
@@ -64,64 +70,113 @@ func switchHandler(sw goflip.SwitchEvent) {
 
 	log.Infof("Bossy switchHandler. Receivied SwitchID=%d Pressed=%v\n", sw.SwitchID, sw.Pressed)
 
+	if !game.GameRunning {
+		//only care about switches that matter when a game is not running
+		switch sw.SwitchID {
+		case swSaucer:
+			game.SolenoidFire(solSaucer)
+		case swCredit:
+			//start game..make this more elegant
+			go creditControl()
+		}
+
+		return
+	}
+
 	switch sw.SwitchID {
 	case swOuthole:
 		//ball over
 		log.Infoln("outhole: switch pressed")
-		if game.BallInPlay > 0 {
-			log.Infoln("outhole: ballinplay is", game.BallInPlay)
-			game.BallDrained()
-			log.Infoln("outhole: ball drained called")
-			if !inWarmUpPeriod {
-				log.Infoln("outhole: not in warm up period")
-				game.PlayerEnd()  //Calling this since we don't have a ball save?
-				ballOverControl() //maybe have this controlled by player end instead? register a method?
-			} else {
-				//go ahead and eject it again
-				game.SolenoidFire(solOuthole)
-			}
-
-		}
+		game.BallDrained()
 
 	case swCredit:
-		//start game..make this more elegant
 		go creditControl()
 	case swShooterLane:
+		game.PlaySound(sndBallLaunch)
 	case swTest:
 	case swCoin:
 	case swInnerRightLane:
+		game.AddScore(1000)
+		game.PlaySound(sndPuckBounce)
 	case swMiddleRightLane:
+		game.AddScore(1000)
+		game.PlaySound(sndPuckBounce)
 	case SwOuterRightLane:
+		game.AddScore(5000)
+		game.PlaySound(sndOutlane)
 	case swOuterLeftLane:
+		game.AddScore(5000)
+		game.PlaySound(sndOutlane)
 	case swMiddleLeftLane:
+		game.AddScore(1000)
+		game.PlaySound(sndPuckBounce)
 	case swInnerLeftLane:
+		game.AddScore(1000)
+		game.PlaySound(sndPuckBounce)
 	case swRightSlingshot:
-		game.SolenoidFire(solRightKicker)
+		game.AddScore(100)
+		game.PlaySound(sndDefense)
+		game.SolenoidFire(solRightSlingshot)
 	case swLeftSlingshot:
-	//which one is this??
+		//which one is this??
+		game.AddScore(100)
+		game.PlaySound(sndDefense)
+		game.SolenoidFire(solLeftSlingshot)
+
 	case swLowerRightTarget:
+		game.AddScore(1000)
+		game.PlaySound(sndTargets)
 	case swMiddleRightTarget:
+		game.AddScore(300)
+		game.PlaySound(sndTargets)
 	case swUpperRightTarget:
+		game.AddScore(1000)
+		game.PlaySound(sndTargets)
 	case swSaucer:
+		game.AddScore(300)
 		go saucerControl()
 	case swLeftPointLane:
+		game.AddScore(1000)
+		game.PlaySound(sndPuckBounce)
 	case swLeftTarget:
+		game.AddScore(300)
+		game.PlaySound(sndTargets)
 	case swLeftBumper:
+		game.AddScore(100)
+		game.PlaySound(sndDefense)
 		game.SolenoidOnDuration(solLeftBumper, 4)
 	case swRightBumper:
+		game.AddScore(100)
+		game.PlaySound(sndDefense)
 		game.SolenoidOnDuration(solRightBumper, 4)
 	case swBehindGoalLane:
+		game.AddScore(1000)
 	case swGoalie:
+		//game.AddScore(1000) handled by goalObserver
 	case swTopLeftLane:
-		game.LampOn(lmpTopLeftLane)
+		//game.LampOn(lmpTopLeftLane)
+		game.AddScore(300)
+		game.PlaySound(sndTargets)
 	case swTopMiddleLane:
-		game.LampOn(lmpTopMiddleLane)
+		game.AddScore(300)
+		//game.LampOn(lmpTopMiddleLane)
+		game.PlaySound(sndTargets)
 	case swTopRightLane:
-		game.LampOn(lmpTopRightLane)
+		game.AddScore(300)
+		//game.LampOn(lmpTopRightLane)
+		game.PlaySound(sndTargets)
 	case swTargetG:
+		game.AddScore(1000)
+		game.PlaySound(sndRaRa)
 	case swTargetO:
+		game.AddScore(1000)
+		game.PlaySound(sndRaRa)
 	case swTargetA:
+		game.AddScore(1000)
+		game.PlaySound(sndRaRa)
 	case swTargetL:
+		game.AddScore(1000)
+		game.PlaySound(sndRaRa)
 
 	}
 }
@@ -132,27 +187,20 @@ func saucerControl() {
 }
 
 func creditControl() {
-	game.FlipperControl(true)
-	game.MaxPlayers++ //add a player to the list
-
-	if !game.IsGameInPlay() {
-		game.Scores = make([]int32, game.MaxPlayers)
-		game.NextUp() //to make it player 1
-		startWarmUpPeriod()
+	if !game.GameRunning {
+		game.GameStart()
+		game.AddPlayer() // go ahead and add player 1
+		game.PlayerUp()
+	} else {
+		if game.BallInPlay == 1 {
+			game.AddPlayer()
+		}
 	}
-	//	log.Infoln("checking outhole switch pressed")
-	//	if game.SwitchPressed(swOuthole) { //JAF BUG: if the game starts with the switch down, it is not detected
-	//		log.Infoln("outhole switch is pressed")
-	time.Sleep(1 * time.Second)
-	game.SolenoidFire(solOuthole)
-	//	} else {
-	//		log.Infoln("outhole switch is not pressed")
-	//	}
 }
 
-func ballOverControl() {
-
-	game.NextUp()
+func ballLaunch() {
+	//	game.NextUp()
+	game.PlaySound(sndWhistle)
 	time.Sleep(1 * time.Second)
 	game.SolenoidFire(solOuthole)
 }
