@@ -76,14 +76,14 @@ const (
 
 //Solenoids
 const (
-	solDropTargets = 1
-	solOuthole     = 7
-	solRightKicker = 10
-	solSaucer      = 11
-	solLeftBumper  = 13
-	solRightBumper = 12
-	solFlippers    = 18
-	solQuestion    = 0 //Not sure what this is.
+	solDropTargets    = 1
+	solOuthole        = 7
+	solRightSlingshot = 10
+	solSaucer         = 11
+	solLeftBumper     = 13
+	solRightBumper    = 12
+	solFlippers       = 18
+	solLeftSlingshot  = 8 //Not sure what this is.
 )
 
 //stats constants
@@ -111,4 +111,39 @@ const (
 const (
 	goalScored = -50
 	inOvertime = -51
+)
+
+//sounds
+/*
+SND = Sound board control (when ready)
+Sounds for Bossy:
+0 = High tone (maybe a puck bouncing ? ?) - maybe have this when you hit a lighted puck
+1 = Star spangled banner - after warmup period
+2 = up then down tone - like crowd doing the wave? (maybe on ball launch have this?)
+3 = icing / asteroids fire -- pop bumpers and sling shots (defense)
+4 = reset
+5 = whistle, up and down tone, and asteroids icing (end of game)
+6 = n/a
+7 = whistle only - ball drain, and 2 for ball launch?
+8 = low tones (bouncing ball..) - outlanes?
+9 = high tones (bouncing ball) ?? - when we are moving the lit puck to a new place
+10 = nothing
+11 = puck bounce (10 pt shot)
+12 = ra ra , ra-ra-ra, ra ra, ra-ra-ra (when you set up for a line shot)
+13 = charge - (add player / credit)
+14 = nothing
+15 = nothing*/
+
+const (
+	sndLitPuck    = 0
+	sndAnthem     = 1
+	sndBallLaunch = 2
+	sndDefense    = 3
+	sndGoal       = 5
+	sndWhistle    = 7 //made this generic as we are going to use this in a few places
+	sndOutlane    = 8
+	sndTargets    = 9
+	sndPuckBounce = 11
+	sndRaRa       = 12
+	sndCredit     = 13
 )
