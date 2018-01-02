@@ -112,9 +112,14 @@ func (p *collectOvertime) PlayerStart(playerID int) {
 
 }
 
-/*PlayerEnd is called after the very last ball for the player is over
-(after ball 3 for example)*/
+/*PlayerEnd is called after every ball for the player is over*/
 func (p *collectOvertime) PlayerEnd(playerID int) {
+
+}
+
+/*PlayerFinish is called after the very last ball for the player is over
+(after ball 3 for example)*/
+func (p *collectOvertime) PlayerFinish(playerID int) {
 
 }
 
