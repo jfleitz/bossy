@@ -82,6 +82,7 @@ func (p *goalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	incPlayerStat(game.CurrentPlayer, totalGoalCount)
 
 	//play a sound
+	game.PlaySound(sndGoal)
 
 	//flash the goal light and reset target bank
 	go func() {
@@ -112,9 +113,14 @@ func (p *goalObserver) PlayerStart(playerID int) {
 
 }
 
-/*PlayerEnd is called after the very last ball for the player is over
-(after ball 3 for example)*/
+/*PlayerEnd is called after the ball for the player is over)*/
 func (p *goalObserver) PlayerEnd(playerID int) {
+
+}
+
+/*PlayerFinish is called after the very last ball for the player is over
+(after ball 3 for example)*/
+func (p *goalObserver) PlayerFinish(playerID int) {
 
 }
 

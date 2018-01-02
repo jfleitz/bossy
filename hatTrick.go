@@ -127,9 +127,14 @@ func (p *hatTrick) PlayerStart(playerID int) {
 
 }
 
-/*PlayerEnd is called after the very last ball for the player is over
-(after ball 3 for example)*/
+/*PlayerEnd is called after every ball for the player is over*/
 func (p *hatTrick) PlayerEnd(playerID int) {
+
+}
+
+/*PlayerFinish is called after the very last ball for the player is over
+(after ball 3 for example)*/
+func (p *hatTrick) PlayerFinish(playerID int) {
 	//Award for any hat tricks.
 	htcount := getPlayerStat(game.CurrentPlayer, hatTrickCount)
 	game.AddScore(htcount * 22000) //22000 for each hat trick.

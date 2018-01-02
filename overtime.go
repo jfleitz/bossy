@@ -59,9 +59,14 @@ func (p *overTimeObserver) PlayerStart(playerID int) {
 
 }
 
-/*PlayerEnd is called after the very last ball for the player is over
-(after ball 3 for example)*/
+/*PlayerEnd is called after the ball for the player is over)*/
 func (p *overTimeObserver) PlayerEnd(playerID int) {
+
+}
+
+/*PlayerFinish is called after the very last ball for the player is over
+(after ball 3 for example)*/
+func (p *overTimeObserver) PlayerFinish(playerID int) {
 
 }
 
