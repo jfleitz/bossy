@@ -43,6 +43,8 @@ func main() {
 		new(warmUpPeriodObserver),
 	}
 
+	game.DiagObserver = new(diagObserver)
+
 	inWarmUpPeriod = false
 
 	//Set the game limitations here
@@ -97,30 +99,30 @@ func switchHandler(sw goflip.SwitchEvent) {
 	case swCoin:
 	case swInnerRightLane:
 		game.AddScore(1000)
-		game.PlaySound(sndPuckBounce)
+		game.PlaySound(sndFiring)
 	case swMiddleRightLane:
 		game.AddScore(1000)
-		game.PlaySound(sndPuckBounce)
+		game.PlaySound(sndFiring)
 	case SwOuterRightLane:
 		game.AddScore(5000)
-		game.PlaySound(sndOutlane)
+		game.PlaySound(sndFiring)
 	case swOuterLeftLane:
 		game.AddScore(5000)
 		game.PlaySound(sndOutlane)
 	case swMiddleLeftLane:
 		game.AddScore(1000)
-		game.PlaySound(sndPuckBounce)
+		game.PlaySound(sndFiring)
 	case swInnerLeftLane:
 		game.AddScore(1000)
-		game.PlaySound(sndPuckBounce)
+		game.PlaySound(sndFiring)
 	case swRightSlingshot:
 		game.AddScore(100)
-		game.PlaySound(sndDefense)
+		game.PlaySound(sndPuckBounce)
 		game.SolenoidFire(solRightSlingshot)
 	case swLeftSlingshot:
 		//which one is this??
 		game.AddScore(100)
-		game.PlaySound(sndDefense)
+		game.PlaySound(sndPuckBounce)
 		game.SolenoidFire(solLeftSlingshot)
 
 	case swLowerRightTarget:
@@ -137,17 +139,17 @@ func switchHandler(sw goflip.SwitchEvent) {
 		go saucerControl()
 	case swLeftPointLane:
 		game.AddScore(1000)
-		game.PlaySound(sndPuckBounce)
+		game.PlaySound(sndFiring)
 	case swLeftTarget:
 		game.AddScore(300)
 		game.PlaySound(sndTargets)
 	case swLeftBumper:
 		game.AddScore(100)
-		game.PlaySound(sndDefense)
+		game.PlaySound(sndPuckBounce)
 		game.SolenoidOnDuration(solLeftBumper, 4)
 	case swRightBumper:
 		game.AddScore(100)
-		game.PlaySound(sndDefense)
+		game.PlaySound(sndPuckBounce)
 		game.SolenoidOnDuration(solRightBumper, 4)
 	case swBehindGoalLane:
 		game.AddScore(1000)
