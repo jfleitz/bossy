@@ -72,6 +72,10 @@ const (
 	lmpTopLeftStar           = 49
 	lmpSamePlayerShootAgain  = 51
 	lmpAllLamps              = 0
+	lmpPlayer1               = 60
+	lmpPlayer2               = 61
+	lmpPlayer3               = 62
+	lmpPlayer4               = 63
 )
 
 //Solenoids
@@ -117,7 +121,7 @@ const (
 /*
 SND = Sound board control (when ready)
 Sounds for Bossy:
-0 = High tone (maybe a puck bouncing ? ?) - maybe have this when you hit a lighted puck
+0 = High tone (maybe a puck bouncing ? ?) - inlanes
 1 = Star spangled banner - after warmup period
 2 = up then down tone - like crowd doing the wave? (maybe on ball launch have this?)
 3 = icing / asteroids fire -- pop bumpers and sling shots (defense)
@@ -128,8 +132,8 @@ Sounds for Bossy:
 8 = low tones (bouncing ball..) - outlanes?
 9 = high tones (bouncing ball) ?? - when we are moving the lit puck to a new place
 10 = nothing
-11 = puck bounce (10 pt shot)
-12 = ra ra , ra-ra-ra, ra ra, ra-ra-ra (when you set up for a line shot)
+11 = puck bounce (10 pt shot) --make this counting down timer
+12 = ra ra , ra-ra-ra, ra ra, ra-ra-ra (when you add a player)
 13 = charge - (add player / credit)
 14 = nothing
 15 = nothing*/
@@ -138,7 +142,7 @@ const (
 	sndLitPuck    = 0
 	sndAnthem     = 1
 	sndBallLaunch = 2
-	sndDefense    = 3
+	sndFiring     = 3
 	sndGoal       = 5
 	sndWhistle    = 7 //made this generic as we are going to use this in a few places
 	sndOutlane    = 8

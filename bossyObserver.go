@@ -42,6 +42,7 @@ func (p *bossyObserver) SwitchHandler(sw goflip.SwitchEvent) {
 
 /*BallDrained is called whenever a ball is drained on the playfield (Before PlayerEnd)*/
 func (p *bossyObserver) BallDrained() {
+	log.Infoln("bossyObsv:BallDrained()")
 
 	if !inWarmUpPeriod {
 		log.Infoln("outhole: not in warm up period")
@@ -61,6 +62,7 @@ func (p *bossyObserver) BallDrained() {
 /*PlayerUp is called after the ball is launched from the Ball Trough for the next ball up
 playerID is the player that is now up*/
 func (p *bossyObserver) PlayerUp(playerID int) {
+	log.Infof("bossyObsv:PlayerUp() for player %d", playerID)
 
 	if game.SwitchPressed(swOuthole) {
 		log.Infoln("bossyObserver: Outhole fire")
@@ -68,38 +70,44 @@ func (p *bossyObserver) PlayerUp(playerID int) {
 	}
 
 	//turn on appropriate Player Up Light (maybe blink it)
+	game.LampOff(lmpPlayer1, lmpPlayer2, lmpPlayer3, lmpPlayer4)
 	//turn off the other player up lights
-
+	game.LampSlowBlink(lmpPlayer1 + playerID - 1)
 }
 
 /*PlayerEnd is called after every ball for the player is over*/
 func (p *bossyObserver) PlayerEnd(playerID int) {
 	//turn off the player up light
+	log.Infoln("bossyObsv:PlayerEnd()")
 }
 
 /*PlayerStart is called the very first time a player is playing (their first Ball1)
  */
 func (p *bossyObserver) PlayerStart(playerID int) {
+	log.Infoln("bossyObsv:PlayerStart()")
 
 }
 
 /*PlayerEnd is called after the very last ball for the player is over
 (after ball 3 for example)*/
 func (p *bossyObserver) PlayerFinish(playerID int) {
-
+	log.Infoln("bossyObsv:PlayerFinish()")
 }
 
 /*PlayerAdded is called after a player is added by the credit button, and after the GameStart event*/
 func (p *bossyObserver) PlayerAdded(playerID int) {
 	//turn on the additional player light
-
+	log.Infoln("bossyObsv:PlayerAdded()")
+	game.PlaySound(sndRaRa)
 }
 
 /*GameOver is called after the last player of the last ball is drained, before the game goes
 into the GameOver mode*/
 func (p *bossyObserver) GameOver() {
+	log.Infoln("bossyObsv:GameOver()")
 	//TODO turn on gameover light
 	//turn off all player up lights, and number of players
+	game.LampOff(lmpPlayer1, lmpPlayer2, lmpPlayer3, lmpPlayer4)
 	game.FlipperControl(false)
 }
 
