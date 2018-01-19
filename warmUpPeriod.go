@@ -99,6 +99,7 @@ func startWarmUpPeriod() {
 	go func() {
 		inWarmUpPeriod = true
 		cancelWarmUp = false
+
 		defer func() {
 			game.LampOff(lmpSamePlayerShootAgain)
 			inWarmUpPeriod = false
@@ -106,26 +107,16 @@ func startWarmUpPeriod() {
 			log.Infoln("Warmup Period complete")
 		}()
 
-		log.Infoln("Warmup Period beginning")
-		game.LampOn(lmpSamePlayerShootAgain)
-		sleepAndCheck(4)
-		if cancelWarmUp {
-			return
+		for elapsedTime := 0; elapsedTime < settings.WarmupPeriodTimeSeconds; elapsedTime++ {
+			if elapsedTime > settings.WarmupPeriodTimeSeconds-2 {
+				game.LampFlastBlink(lmpSamePlayerShootAgain)
+			} else if elapsedTime > settings.WarmupPeriodTimeSeconds-5 {
+				game.LampSlowBlink(lmpSamePlayerShootAgain)
+			} else {
+				game.LampOn(lmpSamePlayerShootAgain)
+			}
+			sleepAndCheck(1)
 		}
-		log.Infoln("Warmup Period 5 seconds left")
-		game.LampSlowBlink(lmpSamePlayerShootAgain)
-		sleepAndCheck(3)
-		if cancelWarmUp {
-			return
-		}
-
-		log.Infoln("Warmup Period 2 seconds left")
-		game.LampFlastBlink(lmpSamePlayerShootAgain)
-		sleepAndCheck(2)
-		if cancelWarmUp {
-			return
-		}
-
 	}()
 }
 
