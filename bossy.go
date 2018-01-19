@@ -25,6 +25,7 @@ func init() {
 }
 
 var game goflip.GoFlip
+var settings config
 
 func main() {
 	//	var p *puckChase
@@ -45,11 +46,13 @@ func main() {
 
 	game.DiagObserver = new(diagObserver)
 
+	settings = loadConfiguration("config.json")
+
 	inWarmUpPeriod = false
 
 	//Set the game limitations here
-	game.TotalBalls = 3
-	game.MaxPlayers = 2
+	game.TotalBalls = settings.TotalBalls
+	game.MaxPlayers = settings.MaxPlayers
 
 	//set the game initalizations here
 	game.BallInPlay = 0
@@ -78,7 +81,7 @@ func switchHandler(sw goflip.SwitchEvent) {
 		case swSaucer:
 			game.SolenoidFire(solSaucer)
 		case swCredit:
-			//start game..make this more elegant
+			//start game
 			go creditControl()
 		}
 

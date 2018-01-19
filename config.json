@@ -1,0 +1,7 @@
+{
+    "totalballs": "3",
+    "maxplayers": "4",
+    "timedmode": true,
+    "balltimeseconds": 20,
+    "warmupperiodtimeseconds": 10
+}
