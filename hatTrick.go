@@ -30,7 +30,7 @@ func (p *hatTrick) Init() {
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
 	log.Infoln("hatTrick:Init called")
-	p.passedTo = make(chan int, 6)
+	p.passedTo = make(chan int, 1)
 	p.hatTrickMonitor()
 }
 
@@ -124,7 +124,10 @@ func (p *hatTrick) PlayerUp(playerID int) {
 /*PlayerStart is called the very first time a player is playing (their first Ball1)
  */
 func (p *hatTrick) PlayerStart(playerID int) {
-
+	setPlayerStat(game.CurrentPlayer, hatTrickCount, 0)
+	setPlayerStat(game.CurrentPlayer, leftGoalCount, 0)
+	setPlayerStat(game.CurrentPlayer, rightGoalCount, 0)
+	setPlayerStat(game.CurrentPlayer, saucerGoalCount, 0)
 }
 
 /*PlayerEnd is called after every ball for the player is over*/
@@ -137,7 +140,11 @@ func (p *hatTrick) PlayerEnd(playerID int) {
 func (p *hatTrick) PlayerFinish(playerID int) {
 	//Award for any hat tricks.
 	htcount := getPlayerStat(game.CurrentPlayer, hatTrickCount)
-	game.AddScore(htcount * 22000) //22000 for each hat trick.
+	if htcount > 0 {
+		game.PlaySound(sndGoal)
+		log.Infof("HatTrick count was %d", htcount)
+		game.AddScore(htcount * 22000) //22000 for each hat trick.
+	}
 }
 
 /*PlayerAdded is called after a player is added by the credit button, and after the GameStart event*/

@@ -4,7 +4,7 @@ import (
 	"sync"
 )
 
-var _playerStats [4]playerStats
+var _playerStats [5]playerStats
 
 type playerStats struct {
 	mu     sync.Mutex
