@@ -32,50 +32,60 @@ const (
 	swTargetO           = 35
 	swTargetA           = 34
 	swTargetL           = 4
+
+	//TODO need tilt
 )
 
 //Lamps
 const (
-	lmpLetterM               = 1
-	lmpLetterI               = 2
-	lmpLetterK               = 3
-	lmpLetterE               = 4
-	lmpLetterB               = 5
-	lmpLetterO               = 6
-	lmpLetterS1              = 7
-	lmpLetterS2              = 8
-	lmpLetterY               = 9
-	lmpOvertimeLeftOfGoal    = 11
-	lmpGoalieWhiteSpot       = 12
-	lmpPointLaneWhiteSpot    = 13
-	lmpTopTargetWhiteSpot    = 14
-	lmpBottomTargetWhiteSpot = 16
-	lmpGoalOnLeftOrangeSpot  = 17
-	lmpTargetsOrangeSpot     = 18
-	lmpTopOrangeSpot         = 19
-	lmpReturnLanesOrangeSpot = 20
-	lmpPointLaneSpecial      = 21
-	lmpBottomLeftSpecial     = 22
-	lmpBottomRightSpecial    = 23
-	lmpTopLeftLane           = 24
-	lmpTopMiddleLane         = 25
-	lmpLeftTarget            = 27
-	lmpMiddleRightTarget     = 28
-	lmpTopRightLane          = 30
-	lmp5000Bonus1            = 32
-	lmp5000Bonus2            = 33
-	lmp5000Bonus3            = 34
-	lmp5000Bonus4            = 35
-	lmpBonusSpotRight        = 37
-	lmpBottomRightGreenSpot  = 38
-	lmpGoalLight             = 45
-	lmpTopLeftStar           = 49
-	lmpSamePlayerShootAgain  = 51
-	lmpAllLamps              = 0
-	lmpPlayer1               = 60
-	lmpPlayer2               = 61
-	lmpPlayer3               = 62
-	lmpPlayer4               = 63
+	lmpLetterM                   = 2
+	lmpLetterI                   = 3
+	lmpLetterK                   = 4
+	lmpLetterE                   = 5
+	lmpLetterB                   = 6
+	lmpLetterO                   = 7
+	lmpLetterS1                  = 8
+	lmpLetterS2                  = 9
+	lmpLetterY                   = 10
+	lmpOvertimeLeftOfGoal        = 12
+	lmpGoalieWhiteSpot           = 13
+	lmpPointLaneWhiteSpot        = 14
+	lmpTopTargetWhiteSpot        = 15
+	lmpBottomTargetWhiteSpot     = 32
+	lmpGoalOnLeftOrangeSpot      = 18
+	lmpTargetsOrangeSpot         = 19
+	lmpTopOrangeSpot             = 17
+	lmpLeftReturnLaneOrangeSpot  = 20
+	lmpRightReturnLaneOrangeSpot = 21
+	lmpPointLaneSpecial          = 22
+	lmpBottomLeftSpecial         = 23
+	lmpBottomRightSpecial        = 24
+	lmpTopLeftLane               = 25
+	lmpTopMiddleLane             = 26
+	lmpLeftTarget                = 28
+	lmpMiddleRightTarget         = 29
+	lmpTopRightLane              = 31
+	lmp5000Bonus1                = 33
+	lmp5000Bonus2                = 34
+	lmp5000Bonus3                = 35
+	lmp5000Bonus4                = 36
+	lmpBonusSpotRight            = 38
+	lmpBottomRightGreenSpot      = 39
+	lmpGoalLight                 = 46
+	lmpTopLeftStar               = 50
+	lmpSamePlayerShootAgain      = 52
+	lmpAllLamps                  = 1
+	lmpPlayer1                   = 61
+	lmpPlayer2                   = 62
+	lmpPlayer3                   = 63
+	lmpPlayer4                   = 64
+
+	lmpGameOver            = 44
+	lmpBackglassSamePlayer = 52
+	lmpTilt                = 40
+	lmpPeriod              = 53
+	lmpMatch               = 38
+	lmpHighScore           = 41
 )
 
 //Solenoids
@@ -139,15 +149,17 @@ Sounds for Bossy:
 15 = nothing*/
 
 const (
-	sndLitPuck    = 0
-	sndAnthem     = 1
-	sndBallLaunch = 2
-	sndFiring     = 3
-	sndGoal       = 5
-	sndWhistle    = 7 //made this generic as we are going to use this in a few places
-	sndOutlane    = 8
-	sndTargets    = 9
-	sndPuckBounce = 11
-	sndRaRa       = 12
-	sndCredit     = 13
+	sndLitPuck     = 0
+	sndAnthem      = 1
+	sndBallLaunch  = 2
+	sndFiring      = 3
+	sndGoal        = 5 //maybe use an actual horn for this
+	sndWhistle     = 7 //made this generic as we are going to use this in a few places
+	sndOutlane     = 8
+	sndTargets     = 9
+	sndPuckBounce  = 11
+	sndRaRa        = 12
+	sndCredit      = 13
+	sndTimeSeconds = 11 //for counting down the last 10 seconds of a period
+	sndBallDrained = 5
 )
