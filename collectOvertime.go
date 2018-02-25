@@ -60,13 +60,13 @@ func (p *collectOvertime) SwitchHandler(sw goflip.SwitchEvent) {
 		p.incAndFlashLamp(lmpTargetsOrangeSpot)
 		break
 	case swInnerRightLane:
-		p.incAndFlashLamp(lmpReturnLanesOrangeSpot)
+		p.incAndFlashLamp(lmpRightReturnLaneOrangeSpot)
 		break
 	case swInnerLeftLane:
-		p.incAndFlashLamp(lmpReturnLanesOrangeSpot)
+		p.incAndFlashLamp(lmpLeftReturnLaneOrangeSpot)
 		break
 	case swBehindGoalLane:
-		p.incAndFlashLamp(lmpReturnLanesOrangeSpot)
+		p.incAndFlashLamp(lmpGoalOnLeftOrangeSpot)
 		break
 	default:
 		return
@@ -88,7 +88,8 @@ func (p *collectOvertime) flashOTLights() {
 		lmpOvertimeLeftOfGoal,
 		lmpTopOrangeSpot,
 		lmpTargetsOrangeSpot,
-		lmpReturnLanesOrangeSpot,
+		lmpRightReturnLaneOrangeSpot,
+		lmpLeftReturnLaneOrangeSpot,
 		lmpGoalOnLeftOrangeSpot)
 
 }
