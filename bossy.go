@@ -20,8 +20,10 @@ import (
 )
 
 func init() {
+	settings = loadConfiguration("config.json")
+	log.SetLevel(log.DebugLevel)
 	log.SetOutput(os.Stdout)
-
+	log.Infoln("bossy init complete")
 }
 
 var game goflip.GoFlip
@@ -34,10 +36,10 @@ func main() {
 	//	g = new(goalObserver)
 	game.Observers = []goflip.Observer{
 		new(bossyObserver),
-		//new(puckChase),
-		//new(goalObserver),
-		//new(endOfBallBonus),
-		//new(hatTrick),
+		new(puckChase),
+		new(goalObserver),
+		new(endOfBallBonus),
+		new(hatTrick),
 		//new(lilcoLine),
 		//new(collectOvertime),
 		//new(overTimeObserver),
@@ -45,8 +47,6 @@ func main() {
 	}
 
 	game.DiagObserver = new(diagObserver)
-
-	settings = loadConfiguration("config.json")
 
 	inWarmUpPeriod = false
 
@@ -187,7 +187,8 @@ func switchHandler(sw goflip.SwitchEvent) {
 }
 
 func saucerControl() {
-	time.Sleep(2 * time.Second)
+	game.PlaySound(sndRaRa)
+	time.Sleep(3500 * time.Millisecond)
 	game.SolenoidFire(solSaucer)
 }
 
@@ -205,7 +206,7 @@ func creditControl() {
 
 func ballLaunch() {
 	//	game.NextUp()
-	game.PlaySound(sndWhistle)
+	///	game.PlaySound(sndWhistle)
 	time.Sleep(1 * time.Second)
 	game.SolenoidFire(solOuthole)
 }
