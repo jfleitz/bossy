@@ -16,11 +16,12 @@ import (
 const (
 	notTesting    = 0
 	testDisplays  = 1
-	testLamps     = 2
-	testSolenoids = 3
+	testAllLamps  = 2
+	testLamps     = 3
+	testSolenoids = 4
 	//testSounds    = 4
 
-	maxTests = 3
+	maxTests = 4
 )
 
 type diagObserver struct {
@@ -69,6 +70,8 @@ func (p *diagObserver) runTest() {
 	switch p.testMode {
 	case testDisplays:
 		go p.testDisplays()
+	case testAllLamps:
+		go p.testAllLamps()
 	case testLamps:
 		go p.testLamps()
 	case testSolenoids:
@@ -98,7 +101,20 @@ func (p *diagObserver) testDisplays() {
 
 		time.Sleep(time.Millisecond * 500)
 		if p.testMode != testDisplays {
-			break
+			return
+		}
+	}
+}
+
+func (p *diagObserver) testAllLamps() {
+	for {
+		game.LampOn(1)
+		game.SetBallInPlayDisp(0)
+		time.Sleep(time.Second * 1)
+		game.LampOff(1)
+		time.Sleep(time.Second * 1)
+		if p.testMode != testAllLamps {
+			return
 		}
 	}
 }
@@ -106,14 +122,14 @@ func (p *diagObserver) testDisplays() {
 func (p *diagObserver) testLamps() {
 
 	for {
-		for id := 0; id < 64; id++ {
+		for id := 0; id < 65; id++ {
 			game.LampOn(id)
 			game.SetBallInPlayDisp(int8(id))
 			time.Sleep(time.Second * 1)
 			game.LampOff(id)
 
 			if p.testMode != testLamps {
-				break
+				return
 			}
 		}
 	}
@@ -127,7 +143,7 @@ func (p *diagObserver) testSolenoids() {
 			time.Sleep(time.Second * 1)
 
 			if p.testMode != testSolenoids {
-				break
+				return
 			}
 		}
 	}
