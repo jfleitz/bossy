@@ -63,11 +63,7 @@ func (p *bossyObserver) BallDrained() {
 playerID is the player that is now up*/
 func (p *bossyObserver) PlayerUp(playerID int) {
 	log.Infof("bossyObsv:PlayerUp() for player %d", playerID)
-
-	if game.SwitchPressed(swOuthole) {
-		log.Infoln("bossyObserver: Outhole fire")
-		game.SolenoidFire(solOuthole)
-	}
+	game.SolenoidFire(solOuthole)
 
 	//turn on appropriate Player Up Light (maybe blink it)
 	game.LampOff(lmpPlayer1, lmpPlayer2, lmpPlayer3, lmpPlayer4)
@@ -91,29 +87,35 @@ func (p *bossyObserver) PlayerStart(playerID int) {
 /*PlayerEnd is called after the very last ball for the player is over
 (after ball 3 for example)*/
 func (p *bossyObserver) PlayerFinish(playerID int) {
-	log.Infoln("bossyObsv:PlayerFinish()")
+	log.Infof("bossyObsv:PlayerFinish: %d\n", playerID)
 }
 
 /*PlayerAdded is called after a player is added by the credit button, and after the GameStart event*/
 func (p *bossyObserver) PlayerAdded(playerID int) {
 	//turn on the additional player light
-	log.Infoln("bossyObsv:PlayerAdded()")
-	game.PlaySound(sndRaRa)
+	log.Infof("bossyObsv:PlayerAdded: %d\n", playerID)
+	if playerID == 1 {
+		game.PlaySound(sndAnthem)
+	} else {
+		game.PlaySound(sndRaRa)
+	}
 }
 
 /*GameOver is called after the last player of the last ball is drained, before the game goes
 into the GameOver mode*/
 func (p *bossyObserver) GameOver() {
 	log.Infoln("bossyObsv:GameOver()")
-	//TODO turn on gameover light
 	//turn off all player up lights, and number of players
 	game.LampOff(lmpPlayer1, lmpPlayer2, lmpPlayer3, lmpPlayer4)
+	game.LampSlowBlink(lmpGameOver)
+	game.LampOff(lmpPeriod)
 	game.FlipperControl(false)
 }
 
 /*GameStart is called whenever a new game is started*/
 func (p *bossyObserver) GameStart() {
 	log.Infoln("bossyObserver:GameStart()")
-	//TODO turn off GameOver light
+	game.LampOff(lmpGameOver)
+	game.LampOn(lmpPeriod)
 	game.FlipperControl(true)
 }
