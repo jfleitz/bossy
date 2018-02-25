@@ -58,6 +58,7 @@ func (p *warmUpPeriodObserver) BallDrained() {
 /*PlayerUp is called after the ball is launched from the Ball Trough for the next ball up
 playerID is the player that is now up*/
 func (p *warmUpPeriodObserver) PlayerUp(playerID int) {
+	log.Infoln("PlayerUp: startWarmUp false")
 	p.startWarmUp = false
 
 }
@@ -65,6 +66,7 @@ func (p *warmUpPeriodObserver) PlayerUp(playerID int) {
 /*PlayerStart is called the very first time a player is playing (their first Ball1)
  */
 func (p *warmUpPeriodObserver) PlayerStart(playerID int) {
+	log.Infoln("PlayerUp: startWarmUp true")
 	p.startWarmUp = true
 }
 
