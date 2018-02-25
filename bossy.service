@@ -1,0 +1,23 @@
+#Check https://www.raspberrypi.org/documentation/linux/usage/systemd.md
+#Mike Bossy service file to be installed by copying to /lib/systemd/system
+#sudo chmod 644 
+#sudo systemctl daemon-reload
+#to start/stop: 
+#sudo systemctl start bossy.service
+#to enable auto start on bootup:
+#sudo systemctl enable bossy.Service
+
+[Unit]
+Description=Mike Bossy Pinball binary
+After=network.target
+
+[Service]
+ExecStart=/home/pi/bossy
+WorkingDirectory=/home/pi
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
