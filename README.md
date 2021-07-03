@@ -40,4 +40,6 @@ Some Hockey player specific scoring has been added to, including Hat Trick (3 ti
         * Either Left Flipper Inlane switch
         * Either Right Flipper Inlane switch
         * The Upper Right saucer
+    * Score a goal
+    * Scoring a goal prior to the the above will cancel the hat trick sequence.
     * This will flash the Goal Light and make the next goal 220,000 points

@@ -15,8 +15,8 @@ import (
 	"os"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
-	"github.com/jfleitz/goflip"
+	"github.com/jfleitz/goflip/pkg/goflip"
+	log "github.com/sirupsen/logrus"
 )
 
 func init() {
