@@ -4,12 +4,9 @@ package main
  */
 
 import (
-	log "github.com/Sirupsen/logrus"
-	"github.com/jfleitz/goflip"
+	"github.com/jfleitz/goflip/pkg/goflip"
+	log "github.com/sirupsen/logrus"
 )
-
-/*
- */
 
 type bossyObserver struct {
 	//add your variables for the observer here

@@ -4,8 +4,8 @@ import (
 	"math/rand"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
-	"github.com/jfleitz/goflip"
+	"github.com/jfleitz/goflip/pkg/goflip"
+	log "github.com/sirupsen/logrus"
 )
 
 type puckChase struct {
@@ -150,6 +150,8 @@ func (p *puckChase) puckHandler() {
 	curLamp := 0
 	lightLoops := 3 //to stop the looping
 	litPuck := 0
+	chooseAnotherTimeout := 100
+	chooseAnother := 0
 
 	for {
 		select {
@@ -176,8 +178,7 @@ func (p *puckChase) puckHandler() {
 			}
 
 		case <-time.After(100 * time.Millisecond):
-			//looping here
-
+			//controlling the light loops for choosing the next puck
 			if lightLoops < 2 {
 				//we are lighting something
 				p.turnOffPrevLamp(curLamp)
@@ -193,9 +194,16 @@ func (p *puckChase) puckHandler() {
 				if lightLoops == 2 {
 					//we got done with our loops, so display next puck
 					p.setNextPuck(litPuck)
+					chooseAnother = 0
 				}
 			}
 
+			//See if we should choose another puck or not. If so, then feed back to the channel
+			chooseAnother++
+			if chooseAnother >= chooseAnotherTimeout {
+				chooseAnother = 0
+				p.puckDo <- nextPuck
+			}
 		}
 	}
 

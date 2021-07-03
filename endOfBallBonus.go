@@ -8,8 +8,8 @@ Bonus - For each goal you get 5000 bonus light lit. At the end
 package main //this will probably be package main in your app
 
 import (
-	log "github.com/Sirupsen/logrus"
-	"github.com/jfleitz/goflip"
+	"github.com/jfleitz/goflip/pkg/goflip"
+	log "github.com/sirupsen/logrus"
 )
 
 type endOfBallBonus struct {

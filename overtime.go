@@ -10,8 +10,8 @@ package main //this will probably be package main in your app
 import (
 	"time"
 
-	log "github.com/Sirupsen/logrus"
-	"github.com/jfleitz/goflip"
+	"github.com/jfleitz/goflip/pkg/goflip"
+	log "github.com/sirupsen/logrus"
 )
 
 type overTimeObserver struct {
