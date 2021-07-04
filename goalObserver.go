@@ -44,9 +44,6 @@ func (p *goalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	}
 
 	switch sw.SwitchID {
-	case swGoalie:
-		game.AddScore(1000)
-		return
 	case swTargetG:
 		break
 	case swTargetO:
@@ -58,31 +55,36 @@ func (p *goalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	default:
 		return
 	}
-	//For Hat Trick counting:
-	goalfor := getPlayerStat(game.CurrentPlayer, hatTrickFor)
-	switch goalfor {
-	case passedToLeft:
-		incPlayerStat(game.CurrentPlayer, leftGoalCount)
-		break
-	case passedToRight:
-		incPlayerStat(game.CurrentPlayer, rightGoalCount)
-		break
-	case passedToSaucer:
-		incPlayerStat(game.CurrentPlayer, saucerGoalCount)
-		break
-	}
+
+	/*
+		//For Hat Trick counting:
+		goalfor := getPlayerStat(game.CurrentPlayer, hatTrickFor)
+		switch goalfor {
+		case passedToLeft:
+			incPlayerStat(game.CurrentPlayer, leftGoalCount)
+			break
+		case passedToRight:
+			incPlayerStat(game.CurrentPlayer, rightGoalCount)
+			break
+		case passedToSaucer:
+			incPlayerStat(game.CurrentPlayer, saucerGoalCount)
+			break
+		}
+	*/
 
 	//For goal scoring:
-	addScore := 10000
-	addScore += 10000 * getPlayerStat(game.CurrentPlayer, bipPuckCount)
-	game.AddScore(addScore)
-	setPlayerStat(game.CurrentPlayer, bipPuckCount, 0)
+	//	addScore := 10000
+	//	addScore += 10000 * getPlayerStat(game.CurrentPlayer, bipPuckCount)
+	//	game.AddScore(addScore)
+	//	setPlayerStat(game.CurrentPlayer, bipPuckCount, 0)
 
-	incPlayerStat(game.CurrentPlayer, bipGoalCount)
-	incPlayerStat(game.CurrentPlayer, totalGoalCount)
+	//	incPlayerStat(game.CurrentPlayer, bipGoalCount)
+	//	incPlayerStat(game.CurrentPlayer, totalGoalCount)
 
 	//play a sound
 	game.PlaySound(sndGoal)
+
+	//JAF TODO.. keep track of the G O A L targets, and reset the bank afterwards. Also light the 5k bonus
 
 	//flash the goal light and reset target bank
 	go func() {

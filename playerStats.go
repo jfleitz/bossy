@@ -32,7 +32,9 @@ func incPlayerStat(player int, key string) {
 func decPlayerStat(player int, key string) {
 	defer _playerStats[player].mu.Unlock()
 	_playerStats[player].mu.Lock()
-	_playerStats[player].values[key]--
+	if _playerStats[player].values[key] > 0 {
+		_playerStats[player].values[key]--
+	}
 }
 
 func initStats() {

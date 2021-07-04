@@ -32,8 +32,6 @@ const (
 	swTargetO           = 35
 	swTargetA           = 34
 	swTargetL           = 4
-
-	//TODO need tilt
 )
 
 //Lamps
@@ -102,8 +100,8 @@ const (
 
 //stats constants
 const (
-	bipPuckCount    = "bipPuckCount"    //ball in progress puck count
-	totalPuckCount  = "totalPuckCount"  //total puck count for a player
+	bipShotCount    = "bipShotCount"    //ball in progress puck count
+	totalShotCount  = "totalShotCount"  //total puck count for a player
 	bipGoalCount    = "bipGoalCount"    //ball in progress goal
 	totalGoalCount  = "totalGoalCount"  //total goal count for a player
 	leftGoalCount   = "leftGoalCount"   //total left flipper goals (hattrick)
