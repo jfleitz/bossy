@@ -23,10 +23,11 @@ func setPlayerStat(player int, key string, value int) {
 	_playerStats[player].values[key] = value
 }
 
-func incPlayerStat(player int, key string) {
+func incPlayerStat(player int, key string) int {
 	defer _playerStats[player].mu.Unlock()
 	_playerStats[player].mu.Lock()
 	_playerStats[player].values[key]++
+	return _playerStats[player].values[key]
 }
 
 func decPlayerStat(player int, key string) {

@@ -19,10 +19,6 @@ var game goflip.GoFlip
 var settings config
 
 func main() {
-	//	var p *puckChase
-	//	var g *goalObserver
-	//	p = new(puckChase)
-	//	g = new(goalObserver)
 	game.Observers = []goflip.Observer{
 		new(bossyObserver),
 		new(goalObserver),
@@ -49,7 +45,6 @@ func main() {
 	for {
 		time.Sleep(1000 * time.Millisecond) //just keep sleeping
 		game.SendStats()
-		//log.Infoln("Still Looping ", time.Now)
 	}
 }
 

@@ -17,6 +17,7 @@ import (
 
 type goalObserver struct {
 	//add your variables for the observer here
+	goalBonusLights []int
 }
 
 /*the following line should be called to ensure that your observer DOES
@@ -32,6 +33,12 @@ func (p *goalObserver) Init() {
 	only necessary and not in routines that are called a lot*/
 	log.Infoln("goalObserver:Init called")
 
+	p.goalBonusLights = []int{
+		lmp5000Bonus1,
+		lmp5000Bonus2,
+		lmp5000Bonus3,
+		lmp5000Bonus4,
+	}
 }
 
 /*SwitchHandler is called any time a switch event is received by goflip. This
@@ -56,46 +63,33 @@ func (p *goalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 		return
 	}
 
-	/*
-		//For Hat Trick counting:
-		goalfor := getPlayerStat(game.CurrentPlayer, hatTrickFor)
-		switch goalfor {
-		case passedToLeft:
-			incPlayerStat(game.CurrentPlayer, leftGoalCount)
-			break
-		case passedToRight:
-			incPlayerStat(game.CurrentPlayer, rightGoalCount)
-			break
-		case passedToSaucer:
-			incPlayerStat(game.CurrentPlayer, saucerGoalCount)
-			break
-		}
-	*/
-
-	//For goal scoring:
-	//	addScore := 10000
-	//	addScore += 10000 * getPlayerStat(game.CurrentPlayer, bipPuckCount)
-	//	game.AddScore(addScore)
-	//	setPlayerStat(game.CurrentPlayer, bipPuckCount, 0)
-
-	//	incPlayerStat(game.CurrentPlayer, bipGoalCount)
-	//	incPlayerStat(game.CurrentPlayer, totalGoalCount)
-
 	//play a sound
 	game.PlaySound(sndGoal)
+	incPlayerStat(game.CurrentPlayer, totalGoalCount)
 
-	//JAF TODO.. keep track of the G O A L targets, and reset the bank afterwards. Also light the 5k bonus
+	allTargets := game.SwitchPressed(swTargetG) && game.SwitchPressed((swTargetO)) &&
+		game.SwitchPressed(swTargetA) && game.SwitchPressed(swTargetL)
+	//keep track of the G O A L targets, and reset the bank afterwards. Also light the 5k bonus
 
 	//flash the goal light and reset target bank
 	go func() {
+		if allTargets {
+			game.SolenoidFire(solDropTargets)
+		}
 		game.LampFlastBlink(lmpGoalLight)
 		time.Sleep(3 * time.Second)
 		game.LampOff(lmpGoalLight)
-		game.SolenoidFire(solDropTargets)
 	}()
 
+	if allTargets {
+		cnt := incPlayerStat(game.CurrentPlayer, goalTargetCount)
+		if cnt < 5 {
+			game.LampOn(p.goalBonusLights[cnt-1])
+		}
+	}
+
 	//send back a command over the switch handler channel to call on choosepuck, hat trick determination, etc
-	game.BroadcastEvent(goflip.SwitchEvent{SwitchID: goalScored, Pressed: true})
+	//game.BroadcastEvent(goflip.SwitchEvent{SwitchID: goalScored, Pressed: true})
 }
 
 /*BallDrained is called whenever a ball is drained on the playfield (Before PlayerEnd)*/
@@ -107,6 +101,9 @@ func (p *goalObserver) BallDrained() {
 playerID is the player that is now up*/
 func (p *goalObserver) PlayerUp(playerID int) {
 	game.SolenoidFire(solDropTargets)
+	game.LampOff(p.goalBonusLights...)
+	setPlayerStat(game.CurrentPlayer, goalTargetCount, 0)
+	setPlayerStat(game.CurrentPlayer, totalGoalCount, 0)
 }
 
 /*PlayerStart is called the very first time a player is playing (their first Ball1)

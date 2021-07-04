@@ -59,12 +59,12 @@ func (p *endOfBallBonus) PlayerStart(playerID int) {
 func (p *endOfBallBonus) PlayerEnd(playerID int) {
 	//number of goals is used as the shot multiplier
 	goalCount := getPlayerStat(game.CurrentPlayer, totalGoalCount)
-
+	targetCount := getPlayerStat(game.CurrentPlayer, goalTargetCount)
 	//total number of pucks * the goal count is the bonus
 	shotCount := getPlayerStat(game.CurrentPlayer, totalShotCount)
 
-	//This is a compounded bonus right now (Hold Bonus). Thought we would try this out first before switching or adding an option
 	game.AddScore(goalCount * shotCount * 1000)
+	game.AddScore(targetCount * 5000) //add number of goal targets completed X 5000
 
 }
 
