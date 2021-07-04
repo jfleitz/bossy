@@ -1,16 +1,5 @@
 package main
 
-/*
-TODO/Notes:
-Warm Up period..when this is going, all puck lights should be on (flashing).
-You collect each (which goes to fast flash, then back to slow flash)
-...so WarmUp period should control anything puck related (not have puckChase and warmUp communicate).
-This will make things neater/more maintainable in code.
-
-
-
-*/
-
 import (
 	"os"
 	"time"
@@ -36,14 +25,11 @@ func main() {
 	//	g = new(goalObserver)
 	game.Observers = []goflip.Observer{
 		new(bossyObserver),
-		new(puckChase),
 		new(goalObserver),
 		new(endOfBallBonus),
-		new(hatTrick),
-		//new(lilcoLine),
+		new(warmUpPeriodObserver),
 		//new(collectOvertime),
 		//new(overTimeObserver),
-		new(warmUpPeriodObserver),
 	}
 
 	game.DiagObserver = new(diagObserver)
@@ -119,15 +105,13 @@ func switchHandler(sw goflip.SwitchEvent) {
 		game.AddScore(1000)
 		game.PlaySound(sndFiring)
 	case swRightSlingshot:
-		game.AddScore(100)
-		game.PlaySound(sndPuckBounce)
 		game.SolenoidFire(solRightSlingshot)
-	case swLeftSlingshot:
-		//which one is this??
 		game.AddScore(100)
 		game.PlaySound(sndPuckBounce)
+	case swLeftSlingshot:
 		game.SolenoidFire(solLeftSlingshot)
-
+		game.AddScore(100)
+		game.PlaySound(sndPuckBounce)
 	case swLowerRightTarget:
 		game.AddScore(1000)
 		game.PlaySound(sndTargets)
@@ -147,17 +131,17 @@ func switchHandler(sw goflip.SwitchEvent) {
 		game.AddScore(300)
 		game.PlaySound(sndTargets)
 	case swLeftBumper:
-		game.AddScore(100)
-		game.PlaySound(sndPuckBounce)
 		game.SolenoidOnDuration(solLeftBumper, 4)
-	case swRightBumper:
 		game.AddScore(100)
 		game.PlaySound(sndPuckBounce)
+	case swRightBumper:
 		game.SolenoidOnDuration(solRightBumper, 4)
+		game.AddScore(100)
+		game.PlaySound(sndPuckBounce)
 	case swBehindGoalLane:
 		game.AddScore(1000)
 	case swGoalie:
-		//game.AddScore(1000) handled by goalObserver
+		//game.AddScore(1000) handled by shotObserver
 	case swTopLeftLane:
 		//game.LampOn(lmpTopLeftLane)
 		game.AddScore(300)
@@ -171,18 +155,17 @@ func switchHandler(sw goflip.SwitchEvent) {
 		//game.LampOn(lmpTopRightLane)
 		game.PlaySound(sndTargets)
 	case swTargetG:
-		game.AddScore(1000)
+		game.AddScore(500)
 		game.PlaySound(sndRaRa)
 	case swTargetO:
-		game.AddScore(1000)
+		game.AddScore(500)
 		game.PlaySound(sndRaRa)
 	case swTargetA:
-		game.AddScore(1000)
+		game.AddScore(500)
 		game.PlaySound(sndRaRa)
 	case swTargetL:
-		game.AddScore(1000)
+		game.AddScore(500)
 		game.PlaySound(sndRaRa)
-
 	}
 }
 
