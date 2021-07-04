@@ -83,6 +83,11 @@ func (p *goalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 
 	if allTargets {
 		cnt := incPlayerStat(game.CurrentPlayer, goalTargetCount)
+		if cnt >= 5 {
+			game.LampOn(lmp25000Bonus)
+			cnt -= 5
+		}
+
 		if cnt < 5 {
 			game.LampOn(p.goalBonusLights[cnt-1])
 		}
@@ -102,6 +107,7 @@ playerID is the player that is now up*/
 func (p *goalObserver) PlayerUp(playerID int) {
 	game.SolenoidFire(solDropTargets)
 	game.LampOff(p.goalBonusLights...)
+	game.LampOff(lmp25000Bonus)
 	setPlayerStat(game.CurrentPlayer, goalTargetCount, 0)
 	setPlayerStat(game.CurrentPlayer, totalGoalCount, 0)
 }

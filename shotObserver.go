@@ -3,14 +3,17 @@
 package main
 
 import (
+	"time"
+
 	"github.com/jfleitz/goflip/pkg/goflip"
 	log "github.com/sirupsen/logrus"
 )
 
 type shotObserver struct {
-	shots           []shot //keep track of what shots are lit on the playfield
-	mikebossyLights []int  //This is a list of the MIKE BOSSY lampIDs
-	shotDo          chan int
+	shots               []shot //keep track of what shots are lit on the playfield
+	mikebossyLights     []int  //This is a list of the MIKE BOSSY lampIDs
+	completedIndicators []int  //the two white spots at the bottom of the playfield that symbolize how many times Mike Bossy was spelled
+	shotDo              chan int
 }
 
 type shot struct {
@@ -43,6 +46,8 @@ func (s *shotObserver) Init() {
 		lmpLetterI, lmpLetterK, lmpLetterE,
 		lmpLetterB, lmpLetterO, lmpLetterS1, lmpLetterS2, lmpLetterY,
 	}
+
+	s.completedIndicators = []int{lmpLeftCompleteLetters, lmpRightCompleteLetters}
 
 	s.clearShotStates()
 }
@@ -77,7 +82,6 @@ func (s *shotObserver) SwitchHandler(sw goflip.SwitchEvent) {
 		game.AddScore(1000)                               //give 1000 though for SOG
 		game.PlaySound(sndPuckBounce)
 		return
-		break
 	case swLeftTarget:
 		break
 	case swLeftPointLane:
@@ -113,12 +117,9 @@ func (s *shotObserver) SwitchHandler(sw goflip.SwitchEvent) {
 		return
 	}
 	s.incShotCount()
-	game.LampOn(s.mikebossyLights[s.getShotCount()-1])
-
-	game.PlaySound(sndLitPuck)
-	//	game.AddScore(5000) (score should have been counted already)
-
-	//s.setMikeBossyLetters()
+	if !s.completedLetters() {
+		game.PlaySound(sndLitPuck)
+	}
 }
 
 func (s *shotObserver) incShotCount() {
@@ -138,7 +139,14 @@ func (s *shotObserver) getShotCount() int {
 func (s *shotObserver) setMikeBossyLetters() {
 	game.LampOff(s.mikebossyLights...)
 
-	for i := 0; i < s.getShotCount() && i < 9; i++ {
+	totalLights := s.getShotCount()
+
+	toLight := 9 //default to lighting them all
+	if totalLights < 27 {
+		toLight = totalLights % 9 //since we could have lit up the MikeBossy lights up to 3 times.
+	}
+
+	for i := 0; i < toLight; i++ {
 		game.LampOn(s.mikebossyLights[i]) //JAF TODO.. Here. this is where we light up the mike bossy lights in sequence
 	}
 }
@@ -152,6 +160,30 @@ func (s *shotObserver) lightNextShot() {
 			break
 		}
 	}
+}
+
+func (s *shotObserver) completedLetters() bool {
+	//flash the letters, then turn off, lighting the next White circle
+	totalCount := s.getShotCount()
+
+	if totalCount%9 == 0 {
+		go func() {
+			game.PlaySound(sndRaRa)
+			game.LampFlastBlink(s.mikebossyLights...)
+			time.Sleep(3 * time.Second)
+
+			//set the completed indicators based on number of times
+			for i := 0; i < totalCount/9; i++ {
+				game.LampOn(s.completedIndicators[i])
+			}
+		}()
+
+		//let the default logic handle what letters to light now
+		s.setMikeBossyLetters()
+		return true
+	}
+
+	return false
 }
 
 func (s *shotObserver) BallDrained() {
@@ -168,6 +200,7 @@ func (s *shotObserver) PlayerStart(playerID int) {
 	setPlayerStat(game.CurrentPlayer, totalShotCount, 0)
 
 	game.LampOff(s.mikebossyLights...)
+	game.LampOff(s.completedIndicators...)
 }
 
 /*PlayerEnd is called after every ball for the player is over*/

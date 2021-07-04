@@ -77,6 +77,9 @@ const (
 	lmpPlayer2                   = 62
 	lmpPlayer3                   = 63
 	lmpPlayer4                   = 64
+	lmp25000Bonus                = 0
+	lmpRightCompleteLetters      = 0
+	lmpLeftCompleteLetters       = 0
 
 	lmpGameOver            = 44
 	lmpBackglassSamePlayer = 52
@@ -157,4 +160,8 @@ const (
 	sndCredit      = 13
 	sndTimeSeconds = 11 //for counting down the last 10 seconds of a period
 	sndBallDrained = 5
+
+	snd100Points  = 11
+	snd500Points  = 11
+	snd1000Points = 3
 )
