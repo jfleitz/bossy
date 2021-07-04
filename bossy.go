@@ -88,11 +88,9 @@ func switchHandler(sw goflip.SwitchEvent) {
 		game.AddScore(1000)
 		game.PlaySound(sndFiring)
 	case SwOuterRightLane:
-		game.AddScore(5000)
-		game.PlaySound(sndFiring)
+		addThousands(5000)
 	case swOuterLeftLane:
-		game.AddScore(5000)
-		game.PlaySound(sndOutlane)
+		addThousands(5000)
 	case swMiddleLeftLane:
 		game.AddScore(1000)
 		game.PlaySound(sndFiring)
@@ -117,7 +115,7 @@ func switchHandler(sw goflip.SwitchEvent) {
 		game.AddScore(1000)
 		game.PlaySound(sndTargets)
 	case swSaucer:
-		game.AddScore(300)
+		addHundreds(300)
 		go saucerControl()
 	case swLeftPointLane:
 		game.AddScore(1000)
@@ -165,9 +163,21 @@ func switchHandler(sw goflip.SwitchEvent) {
 }
 
 func saucerControl() {
-	game.PlaySound(sndRaRa)
-	time.Sleep(3500 * time.Millisecond)
-	game.SolenoidFire(solSaucer)
+	go func() {
+		game.PlaySound(sndRaRa)
+		totalLetters := getPlayerStat(game.CurrentPlayer, bipShotCount)
+
+		for i := 0; i < totalLetters; i++ {
+			game.AddScore(1000)
+			time.Sleep(500 * time.Millisecond)
+		}
+
+		if totalLetters == 0 {
+			time.Sleep(1 * time.Second)
+		}
+
+		game.SolenoidFire(solSaucer)
+	}()
 }
 
 func creditControl() {
@@ -187,4 +197,25 @@ func ballLaunch() {
 	///	game.PlaySound(sndWhistle)
 	time.Sleep(1 * time.Second)
 	game.SolenoidFire(solOuthole)
+}
+
+//Incremental scoring with sounds..
+func addHundreds(points int) {
+	go func() {
+		for i := 100; i <= points; i += 100 {
+			game.AddScore(i)
+			game.PlaySound(snd100Points)
+			time.Sleep(500 * time.Millisecond)
+		}
+	}()
+}
+
+func addThousands(points int) {
+	go func() {
+		for i := 1000; i <= points; i += 1000 {
+			game.AddScore(i)
+			game.PlaySound(snd1000Points)
+			time.Sleep(500 * time.Millisecond)
+		}
+	}()
 }
