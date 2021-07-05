@@ -6,6 +6,7 @@ higher overtime value gets the timed extra ball.*/
 package main //this will probably be package main in your app
 
 import (
+	"sync"
 	"time"
 
 	"github.com/jfleitz/goflip/pkg/goflip"
@@ -114,7 +115,8 @@ func (p *collectOvertime) PlayerStart(playerID int) {
 }
 
 /*PlayerEnd is called after every ball for the player is over*/
-func (p *collectOvertime) PlayerEnd(playerID int) {
+func (p *collectOvertime) PlayerEnd(playerID int, wait *sync.WaitGroup) {
+	defer wait.Done()
 
 }
 

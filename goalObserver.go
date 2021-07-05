@@ -9,6 +9,7 @@
 package main
 
 import (
+	"sync"
 	"time"
 
 	"github.com/jfleitz/goflip/pkg/goflip"
@@ -119,8 +120,8 @@ func (p *goalObserver) PlayerStart(playerID int) {
 }
 
 /*PlayerEnd is called after the ball for the player is over)*/
-func (p *goalObserver) PlayerEnd(playerID int) {
-
+func (p *goalObserver) PlayerEnd(playerID int, wait *sync.WaitGroup) {
+	defer wait.Done()
 }
 
 /*PlayerFinish is called after the very last ball for the player is over

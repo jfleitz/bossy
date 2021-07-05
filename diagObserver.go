@@ -4,6 +4,7 @@ package main
  */
 
 import (
+	"sync"
 	"time"
 
 	"github.com/jfleitz/goflip/pkg/goflip"
@@ -161,7 +162,8 @@ func (p *diagObserver) PlayerUp(playerID int) {
 }
 
 /*PlayerEnd is called after every ball for the player is over*/
-func (p *diagObserver) PlayerEnd(playerID int) {
+func (p *diagObserver) PlayerEnd(playerID int, wait *sync.WaitGroup) {
+	defer wait.Done()
 	log.Infoln("diagObserver:PlayerEnd()")
 }
 

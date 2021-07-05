@@ -8,6 +8,7 @@ Bonus - For each goal you get 5000 bonus light lit. At the end
 package main //this will probably be package main in your app
 
 import (
+	"sync"
 	"time"
 
 	"github.com/jfleitz/goflip/pkg/goflip"
@@ -69,7 +70,9 @@ func (p *endOfBallBonus) PlayerStart(playerID int) {
 }
 
 /*PlayerEnd is called after every ball for the player is over*/
-func (p *endOfBallBonus) PlayerEnd(playerID int) {
+func (p *endOfBallBonus) PlayerEnd(playerID int, wait *sync.WaitGroup) {
+	defer wait.Done()
+
 	//target bonuses
 	//number of goals is used as the shot multiplier
 	goalCount := getPlayerStat(game.CurrentPlayer, totalGoalCount)
@@ -123,8 +126,6 @@ func (p *endOfBallBonus) PlayerEnd(playerID int) {
 			game.LampOff(p.bonus5000Points[i])
 		}
 	}
-
-	game.AddScore(targetCount * 5000) //add number of goal targets completed X 5000
 }
 
 /*PlayerFinish is called after the very last ball for the player is over (ball 3 for example)*/

@@ -31,9 +31,12 @@ Don't hit the goalie! Each time you hit the goalie a letter is taken back from t
 
 * A goal scored is treated as a bonus multiplier. Therefore, if you scored 2 goals and had 8 letters spotted, you will get 2 goals X 8 letters X 1000 points = 16000 for your bonus from the Spotted Letters.
 
-* 5000 points will be added to your bonus for each G-O-A-L target bank completion.
+* 5000 points will be added to your bonus for each G-O-A-L target bank completion. Up to 9 Goals (45000 points) are indicated by the bonus lights
 
 ## Additional Period info
 * 9 second warm up period - This is from the original game. Basically a ball save for 9 seconds. You can't hit a goal at this time (or it won't count). It allows you to collect letters though without a goalie taking them away from you.
 
 * Overtime awards. On the last ball, the overtime lights are lit. For each time you hit one, 1 second is added to the overtime. If there are more than one player playing, whomever has the higher overtime value gets the timed extra ball.
+
+### Things to work out
+* Add Goalie servo control based on which targets are standing

@@ -3,6 +3,7 @@
 package main
 
 import (
+	"sync"
 	"time"
 
 	"github.com/jfleitz/goflip/pkg/goflip"
@@ -204,8 +205,8 @@ func (s *shotObserver) PlayerStart(playerID int) {
 }
 
 /*PlayerEnd is called after every ball for the player is over*/
-func (s *shotObserver) PlayerEnd(playerID int) {
-
+func (s *shotObserver) PlayerEnd(playerID int, wait *sync.WaitGroup) {
+	defer wait.Done()
 }
 
 /*PlayerFinish is called after the very last ball for the player is over

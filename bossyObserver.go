@@ -4,6 +4,8 @@ package main
  */
 
 import (
+	"sync"
+
 	"github.com/jfleitz/goflip/pkg/goflip"
 	log "github.com/sirupsen/logrus"
 )
@@ -69,7 +71,8 @@ func (p *bossyObserver) PlayerUp(playerID int) {
 }
 
 /*PlayerEnd is called after every ball for the player is over*/
-func (p *bossyObserver) PlayerEnd(playerID int) {
+func (p *bossyObserver) PlayerEnd(playerID int, wait *sync.WaitGroup) {
+	defer wait.Done()
 	//turn off the player up light
 	log.Infoln("bossyObsv:PlayerEnd()")
 }
