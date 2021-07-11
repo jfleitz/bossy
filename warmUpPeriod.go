@@ -46,7 +46,10 @@ func (p *warmUpPeriodObserver) SwitchHandler(sw goflip.SwitchEvent) {
 		if sw.Pressed {
 			log.Infoln("warmupPeriod starting after ball launch")
 		} else {
-			startWarmUpPeriod()
+			if !inWarmUpPeriod {
+				p.startWarmUp = false
+				startWarmUpPeriod(10) //change this to config
+			}
 		}
 	}
 }
@@ -59,8 +62,6 @@ func (p *warmUpPeriodObserver) BallDrained() {
 /*PlayerUp is called after the ball is launched from the Ball Trough for the next ball up
 playerID is the player that is now up*/
 func (p *warmUpPeriodObserver) PlayerUp(playerID int) {
-	log.Infoln("PlayerUp: startWarmUp false")
-	p.startWarmUp = false
 
 }
 
@@ -73,6 +74,7 @@ func (p *warmUpPeriodObserver) PlayerStart(playerID int) {
 
 /*PlayerEnd is called after thet ball for the player is over*/
 func (p *warmUpPeriodObserver) PlayerEnd(playerID int, wait *sync.WaitGroup) {
+	p.startWarmUp = false
 	defer wait.Done()
 }
 
@@ -98,11 +100,14 @@ func (p *warmUpPeriodObserver) GameStart() {
 	p.warmUpComplete = false
 }
 
-func startWarmUpPeriod() {
+func startWarmUpPeriod(totalSeconds int) {
+	if inWarmUpPeriod {
+		return
+	}
+
 	go func() {
 		inWarmUpPeriod = true
 		cancelWarmUp = false
-
 		defer func() {
 			game.LampOff(lmpSamePlayerShootAgain)
 			inWarmUpPeriod = false
@@ -110,14 +115,16 @@ func startWarmUpPeriod() {
 			log.Infoln("Warmup Period complete")
 		}()
 
-		for elapsedTime := 0; elapsedTime < settings.WarmupPeriodTimeSeconds; elapsedTime++ {
-			if elapsedTime > settings.WarmupPeriodTimeSeconds-2 {
-				game.LampFlastBlink(lmpSamePlayerShootAgain)
-			} else if elapsedTime > settings.WarmupPeriodTimeSeconds-5 {
+		for elapsedTime := 0; elapsedTime < totalSeconds; elapsedTime++ {
+			if elapsedTime > totalSeconds-3 {
+				game.LampFastBlink(lmpSamePlayerShootAgain)
+			} else if elapsedTime > totalSeconds-6 {
 				game.LampSlowBlink(lmpSamePlayerShootAgain)
 			} else {
 				game.LampOn(lmpSamePlayerShootAgain)
 			}
+
+			//JAF TODO, add a sound for ticking here.
 			sleepAndCheck(1)
 		}
 	}()

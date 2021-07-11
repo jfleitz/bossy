@@ -78,7 +78,7 @@ func (p *collectOvertime) SwitchHandler(sw goflip.SwitchEvent) {
 func (p *collectOvertime) incAndFlashLamp(lmpID int) {
 	go func() {
 		incPlayerStat(game.CurrentPlayer, otSeconds)
-		game.LampFlastBlink(lmpID)
+		game.LampFastBlink(lmpID)
 		time.After(1 * time.Second)
 		p.flashOTLights()
 	}()

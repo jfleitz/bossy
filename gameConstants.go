@@ -77,9 +77,10 @@ const (
 	lmpPlayer2                   = 62
 	lmpPlayer3                   = 63
 	lmpPlayer4                   = 64
-	lmp25000Bonus                = 0
-	lmpRightCompleteLetters      = 0
-	lmpLeftCompleteLetters       = 0
+	//JAF Check these
+	lmp25000Bonus           = 45
+	lmpRightCompleteLetters = 38
+	lmpLeftCompleteLetters  = 37
 
 	lmpGameOver            = 44
 	lmpBackglassSamePlayer = 52
@@ -148,20 +149,20 @@ Sounds for Bossy:
 
 const (
 	sndLitPuck     = 0
-	sndAnthem      = 1
-	sndBallLaunch  = 2
+	sndAnthem      = 1 //starting game
+	sndBossySaucer = 2 //up down noise
 	sndFiring      = 3
 	sndGoal        = 5 //maybe use an actual horn for this
 	sndWhistle     = 7 //made this generic as we are going to use this in a few places
 	sndOutlane     = 8
 	sndTargets     = 9
 	sndPuckBounce  = 11
-	sndRaRa        = 12
+	sndRaRa        = 12 //used adding a player
 	sndCredit      = 13
 	sndTimeSeconds = 11 //for counting down the last 10 seconds of a period
 	sndBallDrained = 5
 
 	snd100Points  = 11
 	snd500Points  = 11
-	snd1000Points = 3
+	snd1000Points = 11
 )

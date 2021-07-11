@@ -77,7 +77,7 @@ func (p *goalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 		if allTargets {
 			game.SolenoidFire(solDropTargets)
 		}
-		game.LampFlastBlink(lmpGoalLight)
+		game.LampFastBlink(lmpGoalLight)
 		time.Sleep(3 * time.Second)
 		game.LampOff(lmpGoalLight)
 	}()
