@@ -20,14 +20,15 @@ const (
 	testAllLamps  = 2
 	testLamps     = 3
 	testSolenoids = 4
-	//testSounds    = 4
+	testSounds    = 5
 
-	maxTests = 4
+	maxTests = 5
 )
 
 type diagObserver struct {
 	//add your variables for the observer here
-	testMode int
+	testMode     int
+	currentSound int8
 }
 
 /*the following line should be called to ensure that your observer DOES
@@ -56,13 +57,24 @@ func (p *diagObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	}
 	switch sw.SwitchID {
 	case swTest:
+		p.currentSound = 0 //always reset the sound when test is pressed
 		p.testMode++
 		if p.testMode > maxTests {
 			p.testMode = notTesting
 			game.TestMode = false
+			//JAF TODO need to reset the displays etc when exiting
+			game.GameOver()
 		} else {
 			game.TestMode = true
 			p.runTest()
+		}
+	case swCredit:
+		if game.TestMode && (p.testMode == testSounds) {
+			//increment which sound is being tested
+			p.currentSound++
+			if p.currentSound > 15 {
+				p.currentSound = 0
+			}
 		}
 	}
 
@@ -77,6 +89,8 @@ func (p *diagObserver) runTest() {
 		go p.testLamps()
 	case testSolenoids:
 		go p.testSolenoids()
+	case testSounds:
+		go p.testSounds()
 	}
 }
 
@@ -115,6 +129,24 @@ func (p *diagObserver) testAllLamps() {
 		game.LampOff(1)
 		time.Sleep(time.Second * 1)
 		if p.testMode != testAllLamps {
+			return
+		}
+	}
+}
+
+func (p *diagObserver) testSounds() {
+	var playedSound int8
+	playedSound = -1
+	for {
+		if playedSound != p.currentSound {
+			playedSound = p.currentSound
+			game.SetBallInPlayDisp(playedSound)
+			game.PlaySound(byte(playedSound))
+		}
+
+		time.Sleep(500)
+
+		if p.testMode != testSounds {
 			return
 		}
 	}
