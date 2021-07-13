@@ -51,6 +51,7 @@ func (p *diagObserver) Init() {
 routine must be kept as fast as possible. Make use of go routines when necessary
 Any delay in this routine can cause issues with latency
 */
+
 func (p *diagObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	if !sw.Pressed {
 		return
@@ -63,7 +64,7 @@ func (p *diagObserver) SwitchHandler(sw goflip.SwitchEvent) {
 			p.testMode = notTesting
 			game.TestMode = false
 			//JAF TODO need to reset the displays etc when exiting
-			game.GameOver()
+			game.ChangeGameState(goflip.GameOver)
 		} else {
 			game.TestMode = true
 			p.runTest()

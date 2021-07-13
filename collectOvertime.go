@@ -44,31 +44,22 @@ func (p *collectOvertime) SwitchHandler(sw goflip.SwitchEvent) {
 	switch sw.SwitchID {
 	case swTopLeftLane:
 		p.incAndFlashLamp(lmpTopOrangeSpot)
-		break
 	case swTopMiddleLane:
 		p.incAndFlashLamp(lmpTopOrangeSpot)
-		break
 	case swTopRightLane:
 		p.incAndFlashLamp(lmpTopOrangeSpot)
-		break
 	case swUpperRightTarget:
 		p.incAndFlashLamp(lmpTargetsOrangeSpot)
-		break
 	case swMiddleRightTarget:
 		p.incAndFlashLamp(lmpTargetsOrangeSpot)
-		break
 	case swLowerRightTarget:
 		p.incAndFlashLamp(lmpTargetsOrangeSpot)
-		break
 	case swInnerRightLane:
 		p.incAndFlashLamp(lmpRightReturnLaneOrangeSpot)
-		break
 	case swInnerLeftLane:
 		p.incAndFlashLamp(lmpLeftReturnLaneOrangeSpot)
-		break
 	case swBehindGoalLane:
 		p.incAndFlashLamp(lmpGoalOnLeftOrangeSpot)
-		break
 	default:
 		return
 	}

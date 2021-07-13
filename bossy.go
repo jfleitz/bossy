@@ -22,9 +22,9 @@ func main() {
 	game.Observers = []goflip.Observer{
 		new(bossyObserver),
 		new(goalObserver),
-		//new(endOfBallBonus),
 		//new(warmUpPeriodObserver),
 		new(shotObserver),
+		new(endOfBallBonus),
 		//new(collectOvertime),
 		//new(overTimeObserver),
 	}
@@ -46,7 +46,7 @@ func main() {
 	game.Init(switchHandler)
 
 	//go ahead and go to GameOver by default
-	game.GameOver()
+	game.ChangeGameState(goflip.GameOver)
 
 	for {
 		time.Sleep(1000 * time.Millisecond) //just keep sleeping
@@ -62,7 +62,7 @@ func switchHandler(sw goflip.SwitchEvent) {
 
 	log.Infof("Bossy switchHandler. Receivied SwitchID=%d Pressed=%v\n", sw.SwitchID, sw.Pressed)
 
-	if !game.GameRunning {
+	if game.GetGameState() == goflip.GameOver {
 		//only care about switches that matter when a game is not running
 		switch sw.SwitchID {
 		case swSaucer:
@@ -184,10 +184,11 @@ func saucerControl() {
 }
 
 func creditControl() {
-	if !game.GameRunning {
-		game.GameStart()
+
+	if game.GetGameState() == goflip.GameOver {
+		game.ChangeGameState(goflip.GameStart)
 		game.AddPlayer() // go ahead and add player 1
-		game.PlayerUp()
+		game.ChangePlayerState(goflip.PlayerUp)
 	} else {
 		if game.BallInPlay == 1 {
 			game.AddPlayer()
