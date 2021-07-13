@@ -8,6 +8,7 @@ Since this is a continuation, observer needs to be added last to the list
 package main //this will probably be package main in your app
 
 import (
+	"sync"
 	"time"
 
 	"github.com/jfleitz/goflip/pkg/goflip"
@@ -60,8 +61,8 @@ func (p *overTimeObserver) PlayerStart(playerID int) {
 }
 
 /*PlayerEnd is called after the ball for the player is over)*/
-func (p *overTimeObserver) PlayerEnd(playerID int) {
-
+func (p *overTimeObserver) PlayerEnd(playerID int, wait *sync.WaitGroup) {
+	defer wait.Done()
 }
 
 /*PlayerFinish is called after the very last ball for the player is over

@@ -8,12 +8,18 @@ Bonus - For each goal you get 5000 bonus light lit. At the end
 package main //this will probably be package main in your app
 
 import (
+	"sync"
+	"time"
+
 	"github.com/jfleitz/goflip/pkg/goflip"
 	log "github.com/sirupsen/logrus"
 )
 
 type endOfBallBonus struct {
 	//add your variables for the observer here
+	letters          []int //all of the MikeBossy letters
+	completedLetters []int
+	bonus5000Points  []int
 }
 
 /*the following line should be called to ensure that your observer DOES
@@ -28,6 +34,14 @@ func (p *endOfBallBonus) Init() {
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
 	log.Infoln("endOfBallBonus:Init called")
+
+	p.letters = []int{lmpLetterM,
+		lmpLetterI, lmpLetterK, lmpLetterE,
+		lmpLetterB, lmpLetterO, lmpLetterS1, lmpLetterS2, lmpLetterY,
+	}
+
+	p.completedLetters = []int{lmpLeftCompleteLetters, lmpRightCompleteLetters}
+	p.bonus5000Points = []int{lmp5000Bonus1, lmp5000Bonus2, lmp5000Bonus3, lmp5000Bonus4}
 
 }
 
@@ -56,16 +70,61 @@ func (p *endOfBallBonus) PlayerStart(playerID int) {
 }
 
 /*PlayerEnd is called after every ball for the player is over*/
-func (p *endOfBallBonus) PlayerEnd(playerID int) {
-	//number of goals is the number of 5000 point values
-	goalCount := getPlayerStat(game.CurrentPlayer, totalGoalCount)
+func (p *endOfBallBonus) PlayerEnd(playerID int, wait *sync.WaitGroup) {
+	go func() {
+		//target bonuses
+		//number of goals is used as the shot multiplier
+		goalCount := getPlayerStat(game.CurrentPlayer, bipGoalCount)
 
-	//total number of pucks * the goal count is the bonus
-	puckCount := getPlayerStat(game.CurrentPlayer, totalPuckCount)
+		//total number of pucks * the goal count is the bonus
+		shotCount := getPlayerStat(game.CurrentPlayer, bipShotCount)
 
-	//This is a compounded bonus right now (Hold Bonus). Thought we would try this out first before switching or adding an option
-	game.AddScore(goalCount * puckCount * 5000)
+		for i := 0; i <= goalCount; i++ {
+			for j := shotCount; j > 0; j-- {
+				game.AddScore(1000)
+				time.Sleep(250 * time.Millisecond)
+				switch {
+				case j == 18:
+					game.LampOff(lmpRightCompleteLetters)
+				case j == 9:
+					game.LampOff(lmpLeftCompleteLetters)
+				case j > 18:
+					break
+				default:
+					game.LampOff(p.letters[j])
+				}
+			}
+			time.Sleep(500 * time.Millisecond)
+			//All lamps back on that were lit
 
+			if i > goalCount-1 {
+				break //exit for loop to not turn the lamps on, since already counted
+			}
+
+			//set the completed indicators based on number of times
+			for i := 0; i < shotCount/9; i++ {
+				game.LampOn(p.completedLetters[i])
+			}
+
+			for i := 0; i < shotCount%9; i++ {
+				game.LampOn(p.letters[i])
+			}
+		}
+
+		//goal bonuses
+		targetCount := getPlayerStat(game.CurrentPlayer, goalTargetCount)
+		for i := targetCount; i > 0; i-- {
+			game.AddScore(5000)
+			game.PlaySound(sndWhistle)
+			if i == 4 {
+				game.LampOff(lmp25000Bonus)
+			} else if i < 4 {
+				game.LampOff(p.bonus5000Points[i])
+			}
+			time.Sleep(500 * time.Millisecond)
+		}
+		wait.Done()
+	}()
 }
 
 /*PlayerFinish is called after the very last ball for the player is over (ball 3 for example)*/

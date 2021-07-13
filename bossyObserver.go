@@ -4,6 +4,8 @@ package main
  */
 
 import (
+	"sync"
+
 	"github.com/jfleitz/goflip/pkg/goflip"
 	log "github.com/sirupsen/logrus"
 )
@@ -47,7 +49,7 @@ func (p *bossyObserver) BallDrained() {
 			log.Infoln("0 points by ball. ejecting ball")
 			go ballLaunch()
 		} else {
-			game.PlayerEnd()
+			game.ChangePlayerState(goflip.PlayerEnd)
 		}
 	} else {
 		//go ahead and eject it again
@@ -69,7 +71,8 @@ func (p *bossyObserver) PlayerUp(playerID int) {
 }
 
 /*PlayerEnd is called after every ball for the player is over*/
-func (p *bossyObserver) PlayerEnd(playerID int) {
+func (p *bossyObserver) PlayerEnd(playerID int, wait *sync.WaitGroup) {
+	defer wait.Done()
 	//turn off the player up light
 	log.Infoln("bossyObsv:PlayerEnd()")
 }
@@ -92,7 +95,9 @@ func (p *bossyObserver) PlayerAdded(playerID int) {
 	//turn on the additional player light
 	log.Infof("bossyObsv:PlayerAdded: %d\n", playerID)
 	if playerID == 1 {
-		game.PlaySound(sndAnthem)
+		//game.PlaySound(sndAnthem)
+		//JAF TODO ^^ uncomment
+		game.PlaySound(sndRaRa)
 	} else {
 		game.PlaySound(sndRaRa)
 	}
@@ -101,6 +106,8 @@ func (p *bossyObserver) PlayerAdded(playerID int) {
 /*GameOver is called after the last player of the last ball is drained, before the game goes
 into the GameOver mode*/
 func (p *bossyObserver) GameOver() {
+
+	//JAF TODO, add gameover sound here
 	log.Infoln("bossyObsv:GameOver()")
 	//turn off all player up lights, and number of players
 	game.LampOff(lmpPlayer1, lmpPlayer2, lmpPlayer3, lmpPlayer4)

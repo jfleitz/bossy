@@ -6,6 +6,7 @@ higher overtime value gets the timed extra ball.*/
 package main //this will probably be package main in your app
 
 import (
+	"sync"
 	"time"
 
 	"github.com/jfleitz/goflip/pkg/goflip"
@@ -43,31 +44,22 @@ func (p *collectOvertime) SwitchHandler(sw goflip.SwitchEvent) {
 	switch sw.SwitchID {
 	case swTopLeftLane:
 		p.incAndFlashLamp(lmpTopOrangeSpot)
-		break
 	case swTopMiddleLane:
 		p.incAndFlashLamp(lmpTopOrangeSpot)
-		break
 	case swTopRightLane:
 		p.incAndFlashLamp(lmpTopOrangeSpot)
-		break
 	case swUpperRightTarget:
 		p.incAndFlashLamp(lmpTargetsOrangeSpot)
-		break
 	case swMiddleRightTarget:
 		p.incAndFlashLamp(lmpTargetsOrangeSpot)
-		break
 	case swLowerRightTarget:
 		p.incAndFlashLamp(lmpTargetsOrangeSpot)
-		break
 	case swInnerRightLane:
 		p.incAndFlashLamp(lmpRightReturnLaneOrangeSpot)
-		break
 	case swInnerLeftLane:
 		p.incAndFlashLamp(lmpLeftReturnLaneOrangeSpot)
-		break
 	case swBehindGoalLane:
 		p.incAndFlashLamp(lmpGoalOnLeftOrangeSpot)
-		break
 	default:
 		return
 	}
@@ -77,7 +69,7 @@ func (p *collectOvertime) SwitchHandler(sw goflip.SwitchEvent) {
 func (p *collectOvertime) incAndFlashLamp(lmpID int) {
 	go func() {
 		incPlayerStat(game.CurrentPlayer, otSeconds)
-		game.LampFlastBlink(lmpID)
+		game.LampFastBlink(lmpID)
 		time.After(1 * time.Second)
 		p.flashOTLights()
 	}()
@@ -114,7 +106,8 @@ func (p *collectOvertime) PlayerStart(playerID int) {
 }
 
 /*PlayerEnd is called after every ball for the player is over*/
-func (p *collectOvertime) PlayerEnd(playerID int) {
+func (p *collectOvertime) PlayerEnd(playerID int, wait *sync.WaitGroup) {
+	defer wait.Done()
 
 }
 
