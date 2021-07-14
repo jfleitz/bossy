@@ -32,6 +32,7 @@ const (
 	swTargetO           = 35
 	swTargetA           = 34
 	swTargetL           = 4
+	swBackGoal          = 33
 )
 
 //Lamps

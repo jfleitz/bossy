@@ -60,14 +60,15 @@ func (p *goalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 		break
 	case swTargetL:
 		break
+	case swBackGoal:
+		break
 	default:
 		return
 	}
 
-	//play a sound
+	game.AddScore(500)
 	game.PlaySound(sndGoal)
 	incPlayerStat(game.CurrentPlayer, totalGoalCount)
-
 	allTargets := game.SwitchPressed(swTargetG) && game.SwitchPressed((swTargetO)) &&
 		game.SwitchPressed(swTargetA) && game.SwitchPressed(swTargetL)
 	//keep track of the G O A L targets, and reset the bank afterwards. Also light the 5k bonus
@@ -83,7 +84,9 @@ func (p *goalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	}()
 
 	if allTargets {
+
 		cnt := incPlayerStat(game.CurrentPlayer, goalTargetCount)
+		log.Infof("All targets down. goal count is now %d\n", cnt)
 		if cnt >= 5 {
 			game.LampOn(lmp25000Bonus)
 			cnt -= 5

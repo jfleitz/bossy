@@ -153,17 +153,9 @@ func switchHandler(sw goflip.SwitchEvent) {
 		//game.LampOn(lmpTopRightLane)
 		game.PlaySound(sndTargets)
 	case swTargetG:
-		game.AddScore(500)
-		game.PlaySound(sndRaRa)
 	case swTargetO:
-		game.AddScore(500)
-		game.PlaySound(sndRaRa)
 	case swTargetA:
-		game.AddScore(500)
-		game.PlaySound(sndRaRa)
 	case swTargetL:
-		game.AddScore(500)
-		game.PlaySound(sndRaRa)
 	}
 }
 

@@ -41,6 +41,10 @@ func (p *bossyObserver) SwitchHandler(sw goflip.SwitchEvent) {
 
 /*BallDrained is called whenever a ball is drained on the playfield (Before PlayerEnd)*/
 func (p *bossyObserver) BallDrained() {
+	if game.GetGameState() != goflip.GameStart {
+		return
+	}
+
 	log.Infoln("bossyObsv:BallDrained()")
 
 	if !inWarmUpPeriod {
@@ -84,7 +88,7 @@ func (p *bossyObserver) PlayerStart(playerID int) {
 
 }
 
-/*PlayerEnd is called after the very last ball for the player is over
+/*PlayerFinish is called after the very last ball for the player is over
 (after ball 3 for example)*/
 func (p *bossyObserver) PlayerFinish(playerID int) {
 	log.Infof("bossyObsv:PlayerFinish: %d\n", playerID)
