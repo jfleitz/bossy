@@ -25,6 +25,7 @@ func main() {
 		//new(warmUpPeriodObserver),
 		new(shotObserver),
 		new(endOfBallBonus),
+		new(attractMode),
 		//new(collectOvertime),
 		//new(overTimeObserver),
 	}

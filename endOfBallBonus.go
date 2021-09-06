@@ -80,15 +80,15 @@ func (p *endOfBallBonus) PlayerEnd(playerID int, wait *sync.WaitGroup) {
 		shotCount := getPlayerStat(game.CurrentPlayer, bipShotCount)
 
 		for i := 0; i <= goalCount; i++ {
-			for j := shotCount; j > 0; j-- {
+			for j := shotCount; j >= 0; j-- {
 				game.AddScore(1000)
 				time.Sleep(250 * time.Millisecond)
 				switch {
-				case j == 18:
+				case j == 17:
 					game.LampOff(lmpRightCompleteLetters)
-				case j == 9:
+				case j == 8:
 					game.LampOff(lmpLeftCompleteLetters)
-				case j > 18:
+				case j > 17:
 					break
 				default:
 					game.LampOff(p.letters[j])
@@ -123,6 +123,7 @@ func (p *endOfBallBonus) PlayerEnd(playerID int, wait *sync.WaitGroup) {
 			}
 			time.Sleep(500 * time.Millisecond)
 		}
+
 		wait.Done()
 	}()
 }
