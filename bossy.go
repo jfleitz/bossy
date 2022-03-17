@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	settings = loadConfiguration("config.json")
+	settings = loadConfiguration("config.toml")
 	log.SetLevel(log.DebugLevel)
 	log.SetOutput(os.Stdout)
 	log.Infoln("bossy init complete")
@@ -161,6 +161,7 @@ func switchHandler(sw goflip.SwitchEvent) {
 }
 
 func saucerControl() {
+	//JAF TODO: If BossyBonusFromGoal is set, then start the timer to hit a goal and then collect the bonus
 	go func() {
 		game.PlaySound(sndRaRa)
 		time.Sleep(2 * time.Second)

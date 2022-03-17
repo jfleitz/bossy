@@ -1,4 +1,5 @@
-//JAF TODO: This can go away.
+//shotObserver keeps track of the hockey puck shots that are completed around the playfield.
+//The goalie will take away one of the lit MIKEBOSSY letters and light a spot somewhere on the game again
 
 package main
 
@@ -68,7 +69,6 @@ func (s *shotObserver) SwitchHandler(sw goflip.SwitchEvent) {
 		return
 	}
 
-	//hard coding the switch statement here to be faster.
 	switch sw.SwitchID {
 	case swTopLeftLane:
 	case swTopMiddleLane:

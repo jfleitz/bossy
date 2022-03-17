@@ -14,17 +14,18 @@ The playfield layout is very basic, like a hockey rink! You are the islanders. T
 ## Spots
 * The use of the white spots on the playfield is used for lighting up the shot you need to make with the puck. All spots are lit up at the beginning of the ball. Hitting a lit "puck shot" awards the next letter in the M-I-K-E B-O-S-S-Y bonus bank, and the white spot will be turned off.
 
-* Ths top saucer is Mr. Bossy himself, and he collects the spotted letters (100 points per letter).
+* Ths top saucer is Mr. Bossy himself, and awards 300 points. Immediately hitting a goal,all spotted letters will be collected X1000 points.
 
 ## Goalie
-Don't hit the goalie! Each time you hit the goalie a letter is taken back from the letter bank and a spot is turned on the played. You are awarded 1000 points though for the Shot on Goal. 
+Don't hit the goalie! Each time you hit the goalie a letter is taken back from the letter bank and a spot is turned on the playfield. You are awarded 1000 points for the Shot on Goal. 
 
 ## Goals
 * A goal is scored by hitting one of the drop targets down behind the goalie, or the back behind the drop targets.
 
 * Scoring a goal awards you 500 points. The number of goals scored during your ball is used in the end of ball bonus.
 
-* Hitting all drop targets down during a ball awards a 5000 point bonus at the end of your ball.
+* Hitting all drop targets down during a ball awards a 5000 point bonus, and adds 5000 points to your bonus.
+* On the third drop target bank completion, special is lit.
 
 ## End of Ball Bonus
 * At the end of a ball, you are rewarded a 1000 point bonus for each Letter spotted. You can complete the letter bank up to 3 times (27 letters), designated by the two White indicators below the M-I-K-E B-O-S-S-Y letters.

@@ -2,6 +2,7 @@
     "totalballs": "3",
     "maxplayers": "4",
     "timedmode": false,
+    "bossybonusfromgoal": false,
     "balltimeseconds": 20,
     "warmupperiodtimeseconds": 10,
     "loglevel":0
