@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -10,9 +11,15 @@ import (
 
 func init() {
 	settings = loadConfiguration("config.toml")
-	log.SetLevel(log.DebugLevel)
+	if lvl, err := log.ParseLevel(settings.LogLevel); err != nil {
+		fmt.Errorf("Error with log level in config: %v", err)
+	} else {
+		log.SetLevel(lvl)
+	}
+
 	log.SetOutput(os.Stdout)
-	log.Infoln("bossy init complete")
+	log.Debugln("bossy init complete")
+
 }
 
 var game goflip.GoFlip
@@ -38,7 +45,7 @@ func main() {
 	game.TotalBalls = settings.TotalBalls
 	game.MaxPlayers = settings.MaxPlayers
 
-	log.Infof("Main, warmupseconds is: %v\n", settings.WarmupPeriodTimeSeconds)
+	log.Debugf("Main, warmupseconds is: %v\n", settings.WarmupPeriodTimeSeconds)
 
 	//set the game initalizations here
 	game.BallInPlay = 0
@@ -61,7 +68,7 @@ func switchHandler(sw goflip.SwitchEvent) {
 		return
 	}
 
-	log.Infof("Bossy switchHandler. Receivied SwitchID=%d Pressed=%v\n", sw.SwitchID, sw.Pressed)
+	log.Debugf("Bossy switchHandler. Receivied SwitchID=%d Pressed=%v\n", sw.SwitchID, sw.Pressed)
 
 	if game.GetGameState() == goflip.GameOver {
 		//only care about switches that matter when a game is not running
@@ -79,44 +86,41 @@ func switchHandler(sw goflip.SwitchEvent) {
 	switch sw.SwitchID {
 	case swOuthole:
 		//ball over
-		log.Infoln("outhole: switch pressed")
+		log.Debugln("outhole: switch pressed")
 		game.BallDrained()
 
 	case swCredit:
 		go creditControl()
 	case swShooterLane:
-		game.PlaySound(sndFiring)
+		//		game.PlaySound(sndShooter) //play elsewhere
 	case swTest:
 	case swCoin:
 	case swInnerRightLane:
-		game.AddScore(1000)
-		game.PlaySound(sndPuckBounce)
+		addThousands(1000)
 	case swMiddleRightLane:
-		game.AddScore(1000)
-		game.PlaySound(sndPuckBounce)
+		addThousands(1000)
 	case SwOuterRightLane:
 		addThousands(5000)
 	case swOuterLeftLane:
 		addThousands(5000)
 	case swMiddleLeftLane:
-		game.AddScore(1000)
-		game.PlaySound(sndPuckBounce)
+		addThousands(1000)
 	case swInnerLeftLane:
-		game.AddScore(1000)
-		game.PlaySound(sndPuckBounce)
+		addThousands(1000)
 	case swRightSlingshot:
 		game.SolenoidFire(solRightSlingshot)
 		game.AddScore(100)
-		game.PlaySound(sndPuckBounce)
+		game.PlaySound(sndSlingshot)
 	case swLeftSlingshot:
 		game.SolenoidFire(solLeftSlingshot)
 		game.AddScore(100)
-		game.PlaySound(sndPuckBounce)
+		game.PlaySound(sndSlingshot)
 	case swLowerRightTarget:
 		game.AddScore(1000)
 		game.PlaySound(sndTargets)
 	case swMiddleRightTarget:
-		addHundreds(300)
+		game.AddScore(300)
+		game.PlaySound(sndTargets)
 	case swUpperRightTarget:
 		game.AddScore(1000)
 		game.PlaySound(sndTargets)
@@ -124,35 +128,34 @@ func switchHandler(sw goflip.SwitchEvent) {
 		addHundreds(300)
 		go saucerControl()
 	case swLeftPointLane:
-		game.AddScore(1000)
-		game.PlaySound(sndPuckBounce)
+		addThousands(1000)
 	case swLeftTarget:
-		addHundreds(300)
+		game.AddScore(300)
+		game.PlaySound(sndTargets)
 	case swLeftBumper:
 		game.SolenoidOnDuration(solLeftBumper, 4)
 		game.AddScore(100)
-		game.PlaySound(sndPuckBounce)
+		game.PlaySound(sndBumper)
 	case swRightBumper:
 		game.SolenoidOnDuration(solRightBumper, 4)
 		game.AddScore(100)
-		game.PlaySound(sndPuckBounce)
+		game.PlaySound(sndBumper)
 	case swBehindGoalLane:
-		game.AddScore(1000)
-		game.PlaySound(sndPuckBounce)
+		addThousands(1000)
 	case swGoalie:
 		//game.AddScore(1000) handled by shotObserver
 	case swTopLeftLane:
 		//game.LampOn(lmpTopLeftLane)
 		game.AddScore(300)
-		game.PlaySound(sndTargets)
+		game.PlaySound(sndTopLane)
 	case swTopMiddleLane:
 		game.AddScore(300)
 		//game.LampOn(lmpTopMiddleLane)
-		game.PlaySound(sndTargets)
+		game.PlaySound(sndTopLane)
 	case swTopRightLane:
 		game.AddScore(300)
 		//game.LampOn(lmpTopRightLane)
-		game.PlaySound(sndTargets)
+		game.PlaySound(sndTopLane)
 	case swTargetG:
 	case swTargetO:
 	case swTargetA:
@@ -163,7 +166,7 @@ func switchHandler(sw goflip.SwitchEvent) {
 func saucerControl() {
 	//JAF TODO: If BossyBonusFromGoal is set, then start the timer to hit a goal and then collect the bonus
 	go func() {
-		game.PlaySound(sndRaRa)
+		game.PlaySound(sndSaucer)
 		time.Sleep(2 * time.Second)
 		totalLetters := getPlayerStat(game.CurrentPlayer, bipShotCount)
 
@@ -192,7 +195,6 @@ func creditControl() {
 
 func ballLaunch() {
 	//	game.NextUp()
-	///	game.PlaySound(sndWhistle)
 	time.Sleep(1 * time.Second)
 	game.SolenoidFire(solOuthole)
 }
