@@ -27,7 +27,7 @@ type shot struct {
 var _ goflip.Observer = (*shotObserver)(nil)
 
 func (s *shotObserver) Init() {
-	log.Infoln("shotObserver:Init called")
+	log.Debugln("shotObserver:Init called")
 
 	s.shotDo = make(chan int, 1)
 
@@ -57,7 +57,7 @@ func (s *shotObserver) Init() {
 //clearShotStates clears the state of the shot switches (and turns on the lamps) around
 //the playfield. This does not do anything with the MIKEBOSSY lights
 func (s *shotObserver) clearShotStates() {
-	log.Infoln("clearShotStates called")
+	log.Debugln("clearShotStates called")
 	for i := 0; i < len(s.shots); i++ {
 		s.shots[i].wasHit = false
 		game.LampOn(s.shots[i].lampID)
@@ -79,7 +79,7 @@ func (s *shotObserver) SwitchHandler(sw goflip.SwitchEvent) {
 		//game.LampOff(s.mikebossyLights[s.getShotCount()]) //lower the number of MIKEBOSSY letters too (to match)
 		s.lightNextShot()   //Light one of the shots
 		game.AddScore(1000) //give 1000 though for SOG
-		game.PlaySound(sndPuckBounce)
+		game.PlaySound(sndGoalie)
 		return
 	case swLeftTarget:
 	case swLeftPointLane:
@@ -91,12 +91,12 @@ func (s *shotObserver) SwitchHandler(sw goflip.SwitchEvent) {
 		return
 	}
 
-	log.Infof("Checking if SwitchID was hit %d", sw.SwitchID)
+	log.Debugf("Checking if SwitchID was hit %d", sw.SwitchID)
 	wasHit := false
 	for i, shot := range s.shots {
 		if shot.switchID == sw.SwitchID {
 			if !shot.wasHit {
-				log.Infoln("shotObserver:Lit shot was hit")
+				log.Debugln("shotObserver:Lit shot was hit")
 				game.LampOff(shot.lampID)
 				s.shots[i].wasHit = true
 				wasHit = true
@@ -106,15 +106,15 @@ func (s *shotObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	}
 
 	if !wasHit {
-		log.Infof("SwitchID was not hit %d", sw.SwitchID)
+		log.Debugf("SwitchID was not hit %d", sw.SwitchID)
 		return
 	}
 	s.incShotCount()
-	log.Infof("Shot Count incremented: %d\n", s.getShotCount())
+	log.Debugf("Shot Count incremented: %d\n", s.getShotCount())
 
 	if !s.completedLetters() {
 		s.setMikeBossyLetters()
-		game.PlaySound(sndLitPuck)
+		game.PlaySound(sndLetterAdded)
 	}
 }
 
@@ -143,7 +143,7 @@ func (s *shotObserver) setMikeBossyLetters() {
 	}
 
 	for i := 0; i < toLight; i++ {
-		game.LampOn(s.mikebossyLights[i]) //JAF TODO.. Here. this is where we light up the mike bossy lights in sequence
+		game.LampOn(s.mikebossyLights[i])
 	}
 
 	//set the completed indicators based on number of times
@@ -165,14 +165,14 @@ func (s *shotObserver) lightNextShot() {
 }
 
 func (s *shotObserver) completedLetters() bool {
-	//flash the letters, then turn off, lighting the next White circle
+	//flash the letters, then turn off, light all shots
 	totalCount := s.getShotCount()
 
-	if totalCount%9 == 0 {
+	if totalCount%9 == 0 { //If there is a multiple of 9 targets that have been lit
 		go func() {
-			game.PlaySound(sndRaRa)
-			s.clearShotStates()                      //relight all of the targets
-			game.LampFastBlink(s.mikebossyLights...) //JAF TODO trying this
+			game.PlaySound(sndLettersCompleted)
+			s.clearShotStates() //relight all of the targets
+			game.LampFastBlink(s.mikebossyLights...)
 			time.Sleep(3 * time.Second)
 			//let the default logic handle what letters to light now
 			s.setMikeBossyLetters()
