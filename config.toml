@@ -1,0 +1,8 @@
+TotalBalls = 3
+MaxPlayers = 4
+TimedMode = false
+BossyBonusFromGoal = true
+BallTimeSeconds = 9
+WarmupPeriodTimeSeconds = 9
+LogLevel = "debug"
+KeepAliveMS = 500
