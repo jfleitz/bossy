@@ -31,7 +31,7 @@ is called only once:
 func (p *warmUpPeriodObserver) Init() {
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
-	log.Infoln("warmUpPeriodObserver:Init called")
+	log.Debugln("warmUpPeriodObserver:Init called")
 
 }
 
@@ -44,7 +44,7 @@ func (p *warmUpPeriodObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	if sw.SwitchID == swShooterLane &&
 		p.startWarmUp {
 		if sw.Pressed {
-			log.Infoln("warmupPeriod starting after ball launch")
+			log.Debugln("warmupPeriod starting after ball launch")
 		} else {
 			if !inWarmUpPeriod {
 				p.startWarmUp = false
@@ -68,7 +68,7 @@ func (p *warmUpPeriodObserver) PlayerUp(playerID int) {
 /*PlayerStart is called the very first time a player is playing (their first Ball1)
  */
 func (p *warmUpPeriodObserver) PlayerStart(playerID int) {
-	log.Infoln("PlayerUp: startWarmUp true")
+	log.Debugln("PlayerUp: startWarmUp true")
 	p.startWarmUp = true
 }
 
@@ -112,7 +112,7 @@ func startWarmUpPeriod(totalSeconds int) {
 			game.LampOff(lmpSamePlayerShootAgain)
 			inWarmUpPeriod = false
 			cancelWarmUp = false
-			log.Infoln("Warmup Period complete")
+			log.Debugln("Warmup Period complete")
 		}()
 
 		for elapsedTime := 0; elapsedTime < totalSeconds; elapsedTime++ {
@@ -124,7 +124,7 @@ func startWarmUpPeriod(totalSeconds int) {
 				game.LampOn(lmpSamePlayerShootAgain)
 			}
 
-			//JAF TODO, add a sound for ticking here.
+			game.PlaySound(sndWarmUp)
 			sleepAndCheck(1)
 		}
 	}()

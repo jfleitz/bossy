@@ -45,7 +45,7 @@ is called only once:
 func (a *attractMode) Init() {
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
-	log.Infoln("attractMode:Init called")
+	log.Debugln("attractMode:Init called")
 
 	a.bottom = []int{lmpBottomLeftSpecial, lmpBottomRightGreenSpot, lmpBottomRightSpecial, lmpSamePlayerShootAgain} //jaf todo need bottom left green spot
 	a.bonus5000Points = []int{lmp5000Bonus1, lmp5000Bonus2, lmp5000Bonus3, lmp5000Bonus4}
@@ -104,7 +104,7 @@ func (a *attractMode) PlayerAdded(playerID int) {
 /*GameOver is called after the last player of the last ball is drained, before the game goes
 into the GameOver mode*/
 func (a *attractMode) GameOver() {
-	log.Infoln("attractMode:GameOver()")
+	log.Debugln("attractMode:GameOver()")
 
 	go func() {
 		for {
@@ -149,7 +149,7 @@ func (a *attractMode) GameOver() {
 
 /*GameStart is called whenever a new game is started*/
 func (a *attractMode) GameStart() {
-	log.Infoln("attractMode:GameStart()")
+	log.Debugln("attractMode:GameStart()")
 }
 
 func (a *attractMode) controlLights(lights []int, blink bool, duration int, offAfter bool) {

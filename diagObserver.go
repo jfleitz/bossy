@@ -42,7 +42,7 @@ is called only once:
 func (p *diagObserver) Init() {
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
-	log.Infoln("diagObserver:Init called")
+	log.Debugln("diagObserver:Init called")
 	p.testMode = notTesting
 	game.TestMode = false
 }
@@ -191,39 +191,39 @@ func (p *diagObserver) BallDrained() {
 /*PlayerUp is called after the ball is launched from the Ball Trough for the next ball up
 playerID is the player that is now up*/
 func (p *diagObserver) PlayerUp(playerID int) {
-	log.Infoln("diagObserver:PlayerUp()")
+	log.Debugln("diagObserver:PlayerUp()")
 }
 
 /*PlayerEnd is called after every ball for the player is over*/
 func (p *diagObserver) PlayerEnd(playerID int, wait *sync.WaitGroup) {
 	defer wait.Done()
-	log.Infoln("diagObserver:PlayerEnd()")
+	log.Debugln("diagObserver:PlayerEnd()")
 }
 
 /*PlayerStart is called the very first time a player is playing (their first Ball1)
  */
 func (p *diagObserver) PlayerStart(playerID int) {
-	log.Infoln("diagObserver:PlayerStart()")
+	log.Debugln("diagObserver:PlayerStart()")
 }
 
 /*PlayerEnd is called after the very last ball for the player is over
 (after ball 3 for example)*/
 func (p *diagObserver) PlayerFinish(playerID int) {
-	log.Infoln("diagObserver:PlayerFinish()")
+	log.Debugln("diagObserver:PlayerFinish()")
 }
 
 /*PlayerAdded is called after a player is added by the credit button, and after the GameStart event*/
 func (p *diagObserver) PlayerAdded(playerID int) {
-	log.Infoln("diagObserver:PlayerAdded()")
+	log.Debugln("diagObserver:PlayerAdded()")
 }
 
 /*GameOver is called after the last player of the last ball is drained, before the game goes
 into the GameOver mode*/
 func (p *diagObserver) GameOver() {
-	log.Infoln("diagObserver:GameOver()")
+	log.Debugln("diagObserver:GameOver()")
 }
 
 /*GameStart is called whenever a new game is started*/
 func (p *diagObserver) GameStart() {
-	log.Infoln("diagObserver:GameStart()")
+	log.Debugln("diagObserver:GameStart()")
 }

@@ -31,7 +31,7 @@ is called only once:
 func (p *overTimeObserver) Init() {
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
-	log.Infoln("overTimeObserver:Init called")
+	log.Debugln("overTimeObserver:Init called")
 
 }
 
@@ -104,7 +104,7 @@ func (p *overTimeObserver) GameOver() {
 
 	go func() {
 		for i := 0; i < otSecs; i++ {
-			log.Infof("OT Seconds for player %d:%d", playerUp, i)
+			log.Debugf("OT Seconds for player %d:%d", playerUp, i)
 			time.After(300 * time.Millisecond)
 		}
 		//some sort of light sequence here?
