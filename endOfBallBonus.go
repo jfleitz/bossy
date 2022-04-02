@@ -33,7 +33,7 @@ is called only once:
 func (p *endOfBallBonus) Init() {
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
-	log.Infoln("endOfBallBonus:Init called")
+	log.Debugln("endOfBallBonus:Init called")
 
 	p.letters = []int{lmpLetterM,
 		lmpLetterI, lmpLetterK, lmpLetterE,
@@ -80,15 +80,18 @@ func (p *endOfBallBonus) PlayerEnd(playerID int, wait *sync.WaitGroup) {
 		shotCount := getPlayerStat(game.CurrentPlayer, bipShotCount)
 
 		for i := 0; i <= goalCount; i++ {
-			for j := shotCount; j >= 0; j-- {
+			for j := shotCount; j > 0; j-- {
 				game.AddScore(1000)
+				game.PlaySound(sndLetterBonus)
+
 				time.Sleep(250 * time.Millisecond)
+				//use the set bossyletters method..
 				switch {
-				case j == 17:
+				case j == 18:
 					game.LampOff(lmpRightCompleteLetters)
-				case j == 8:
+				case j == 9:
 					game.LampOff(lmpLeftCompleteLetters)
-				case j > 17:
+				case j > 8:
 					break
 				default:
 					game.LampOff(p.letters[j])
@@ -115,7 +118,7 @@ func (p *endOfBallBonus) PlayerEnd(playerID int, wait *sync.WaitGroup) {
 		targetCount := getPlayerStat(game.CurrentPlayer, goalTargetCount)
 		for i := targetCount; i > 0; i-- {
 			game.AddScore(5000)
-			game.PlaySound(sndWhistle)
+			game.PlaySound(sndGoalBonus)
 			if i == 4 {
 				game.LampOff(lmp25000Bonus)
 			} else if i < 4 {

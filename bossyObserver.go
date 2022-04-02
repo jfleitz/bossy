@@ -123,6 +123,8 @@ func (p *bossyObserver) GameOver() {
 
 	game.PlaySound(sndGameOver)
 	log.Debugln("bossyObsv:GameOver()")
+
+	game.SetCreditDisp(int8(game.Credits))
 	//turn off all player up lights, and number of players
 	game.LampOff(lmpPlayer1, lmpPlayer2, lmpPlayer3, lmpPlayer4)
 	game.LampSlowBlink(lmpGameOver)

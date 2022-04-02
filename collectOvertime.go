@@ -28,7 +28,7 @@ is called only once:
 func (p *collectOvertime) Init() {
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
-	log.Infoln("collectOvertime:Init called")
+	log.Debugln("collectOvertime:Init called")
 
 }
 
@@ -71,19 +71,28 @@ func (p *collectOvertime) incAndFlashLamp(lmpID int) {
 		incPlayerStat(game.CurrentPlayer, otSeconds)
 		game.LampFastBlink(lmpID)
 		time.After(1 * time.Second)
-		p.flashOTLights()
+		p.OTLightsEnable(true)
 	}()
 }
 
-func (p *collectOvertime) flashOTLights() {
-	game.LampSlowBlink(
-		lmpOvertimeLeftOfGoal,
-		lmpTopOrangeSpot,
-		lmpTargetsOrangeSpot,
-		lmpRightReturnLaneOrangeSpot,
-		lmpLeftReturnLaneOrangeSpot,
-		lmpGoalOnLeftOrangeSpot)
-
+func (p *collectOvertime) OTLightsEnable(on bool) {
+	if on {
+		game.LampOn(
+			lmpOvertimeLeftOfGoal,
+			lmpTopOrangeSpot,
+			lmpTargetsOrangeSpot,
+			lmpRightReturnLaneOrangeSpot,
+			lmpLeftReturnLaneOrangeSpot,
+			lmpGoalOnLeftOrangeSpot)
+	} else {
+		game.LampOff(
+			lmpOvertimeLeftOfGoal,
+			lmpTopOrangeSpot,
+			lmpTargetsOrangeSpot,
+			lmpRightReturnLaneOrangeSpot,
+			lmpLeftReturnLaneOrangeSpot,
+			lmpGoalOnLeftOrangeSpot)
+	}
 }
 
 /*BallDrained is called whenever a ball is drained on the playfield (Before PlayerEnd)*/
@@ -95,7 +104,9 @@ func (p *collectOvertime) BallDrained() {
 playerID is the player that is now up*/
 func (p *collectOvertime) PlayerUp(playerID int) {
 	if game.BallInPlay == 3 {
-		p.flashOTLights()
+		p.OTLightsEnable(true)
+	} else {
+		p.OTLightsEnable((false))
 	}
 }
 
@@ -107,6 +118,7 @@ func (p *collectOvertime) PlayerStart(playerID int) {
 
 /*PlayerEnd is called after every ball for the player is over*/
 func (p *collectOvertime) PlayerEnd(playerID int, wait *sync.WaitGroup) {
+	p.OTLightsEnable((false))
 	defer wait.Done()
 
 }
@@ -125,7 +137,7 @@ func (p *collectOvertime) PlayerAdded(playerID int) {
 /*GameOver is called after the last player of the last ball is drained, before the game goes
 into the GameOver mode*/
 func (p *collectOvertime) GameOver() {
-
+	p.OTLightsEnable((false))
 }
 
 /*GameStart is called whenever a new game is started*/

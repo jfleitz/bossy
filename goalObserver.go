@@ -32,7 +32,7 @@ is called only once:
 func (p *goalObserver) Init() {
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
-	log.Infoln("goalObserver:Init called")
+	log.Debugln("goalObserver:Init called")
 
 	p.goalBonusLights = []int{
 		lmp5000Bonus1,
@@ -67,7 +67,7 @@ func (p *goalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	}
 
 	game.AddScore(500)
-	game.PlaySound(sndGoal)
+	game.PlaySound(sndGoalTarget)
 	incPlayerStat(game.CurrentPlayer, totalGoalCount)
 	allTargets := game.SwitchPressed(swTargetG) && game.SwitchPressed((swTargetO)) &&
 		game.SwitchPressed(swTargetA) && game.SwitchPressed(swTargetL)
@@ -78,6 +78,7 @@ func (p *goalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 		if allTargets {
 			game.SolenoidFire(solDropTargets)
 		}
+		game.AddScore(5000)
 		game.LampFastBlink(lmpGoalLight)
 		time.Sleep(3 * time.Second)
 		game.LampOff(lmpGoalLight)
@@ -86,7 +87,7 @@ func (p *goalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	if allTargets {
 
 		cnt := incPlayerStat(game.CurrentPlayer, goalTargetCount)
-		log.Infof("All targets down. goal count is now %d\n", cnt)
+		log.Debugf("All targets down. goal count is now %d\n", cnt)
 		if cnt >= 5 {
 			game.LampOn(lmp25000Bonus)
 			cnt -= 5
@@ -109,7 +110,9 @@ func (p *goalObserver) BallDrained() {
 /*PlayerUp is called after the ball is launched from the Ball Trough for the next ball up
 playerID is the player that is now up*/
 func (p *goalObserver) PlayerUp(playerID int) {
+	log.Debugln("Firing Drop Targets")
 	game.SolenoidFire(solDropTargets)
+	log.Debugln("Drop Targets reset")
 	game.LampOff(p.goalBonusLights...)
 	game.LampOff(lmp25000Bonus)
 	setPlayerStat(game.CurrentPlayer, goalTargetCount, 0)
