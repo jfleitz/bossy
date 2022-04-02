@@ -44,6 +44,7 @@ func main() {
 	//Set the game limitations here
 	game.TotalBalls = settings.TotalBalls
 	game.MaxPlayers = settings.MaxPlayers
+	game.Credits = 0
 
 	log.Debugf("Main, warmupseconds is: %v\n", settings.WarmupPeriodTimeSeconds)
 
@@ -95,6 +96,8 @@ func switchHandler(sw goflip.SwitchEvent) {
 		//		game.PlaySound(sndShooter) //play elsewhere
 	case swTest:
 	case swCoin:
+		game.Credits++
+		game.SetCreditDisp(int8(game.Credits))
 	case swInnerRightLane:
 		addThousands(1000)
 	case swMiddleRightLane:
@@ -181,7 +184,6 @@ func saucerControl() {
 }
 
 func creditControl() {
-
 	if game.GetGameState() == goflip.GameOver {
 		game.ChangeGameState(goflip.GameStart)
 		game.AddPlayer() // go ahead and add player 1
