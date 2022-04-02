@@ -24,7 +24,7 @@ Don't hit the goalie! Each time you hit the goalie a letter is taken back from t
 
 * Scoring a goal awards you 500 points. The number of goals scored during your ball is used in the end of ball bonus.
 
-* Hitting all drop targets down during a ball awards a 5000 point bonus, and adds 5000 points to your bonus.
+* Hitting all drop targets down during a ball awards a 5000 points, and adds 5000 points to your bonus.
 * On the third drop target bank completion, special is lit.
 
 ## End of Ball Bonus
@@ -40,4 +40,11 @@ Don't hit the goalie! Each time you hit the goalie a letter is taken back from t
 * Overtime awards. On the last ball, the overtime lights are lit. For each time you hit one, 1 second is added to the overtime. If there are more than one player playing, whomever has the higher overtime value gets the timed extra ball.
 
 ### Things to work out
-* Add Goalie servo control based on which targets are standing
+[] servo: Add Goalie servo control based on which targets are standing
+[x] spot: light all spots up
+[x] spot: as a spot is hit, light the next letter
+[x] spot: when a letter is added back (by the goalie) add it back to one of the empty spots
+[] saucer: when you hit the saucer, then the next shot is one of the goal switches, award the # of letters collected x 1000
+[x] goal: Hitting all drop targets down during a ball awards a 5000 points, and adds 5000 points to your bonus.
+[x] bonus: # of goals X letters is letter bonus, add 5000 to the bonus for each complete goal targets
+[] overtime tracking..last ball, every overtime shot flash and add to second counter
