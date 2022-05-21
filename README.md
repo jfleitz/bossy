@@ -48,3 +48,17 @@ Don't hit the goalie! Each time you hit the goalie a letter is taken back from t
 [x] goal: Hitting all drop targets down during a ball awards a 5000 points, and adds 5000 points to your bonus.
 [x] bonus: # of goals X letters is letter bonus, add 5000 to the bonus for each complete goal targets
 [] overtime tracking..last ball, every overtime shot flash and add to second counter
+
+### Goalie
+Goalie shold rest toward the right / fully extended when GameOver
+When Game is Started, Goalie should move to Center (on ball launch to trough)
+
+Goalie should move as followed:
+LOW=Farthest standing left Target sets the left range, Farthest right Target sets the right range
+
+As switches are hit on the left, the goalie should move between LOW and half to HIGH
+
+As switches are hit on the right, the goalie should move between half to HIGH and HIGH
+
+When a saucer is hit, the goalie should move to the right, then go back and forth from low to high.
+

@@ -9,8 +9,17 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var game goflip.GoFlip
+var settings *config
+
 func init() {
-	settings = loadConfiguration("config.toml")
+	var err error
+	settings, err = loadConfiguration("config.toml")
+
+	if err != nil {
+		os.Exit(1)
+	}
+
 	if lvl, err := log.ParseLevel(settings.LogLevel); err != nil {
 		fmt.Errorf("Error with log level in config: %v", err)
 	} else {
@@ -19,11 +28,12 @@ func init() {
 
 	log.SetOutput(os.Stdout)
 	log.Debugln("bossy init complete")
+	log.Printf("TotalBalls: %v\n", settings.TotalBalls)
+	log.Printf("BallTimeSeconds: %v\n", settings.BallTimeSeconds)
+	log.Printf("Start position: %v\n", settings.Goalie.StartPosition)
+	log.Printf("limitLeft position: %v\n", settings.Goalie.LimitLeft)
 
 }
-
-var game goflip.GoFlip
-var settings config
 
 func main() {
 	game.Observers = []goflip.Observer{
@@ -35,6 +45,7 @@ func main() {
 		new(attractMode),
 		//new(collectOvertime),
 		//new(overTimeObserver),
+		new(goalieObserver),
 	}
 
 	game.DiagObserver = new(diagObserver)
@@ -45,6 +56,12 @@ func main() {
 	game.TotalBalls = settings.TotalBalls
 	game.MaxPlayers = settings.MaxPlayers
 	game.Credits = 0
+
+	//Set Goalie Servo control params
+	game.PWMPortConfig.ArcRange = settings.Goalie.ArcRange
+	game.PWMPortConfig.PulseMax = settings.Goalie.PulseMax
+	game.PWMPortConfig.PulseMin = settings.Goalie.PulseMin
+	game.PWMPortConfig.DeviceAddress = settings.Goalie.DeviceAddress
 
 	log.Debugf("Main, warmupseconds is: %v\n", settings.WarmupPeriodTimeSeconds)
 

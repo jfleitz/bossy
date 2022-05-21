@@ -1,8 +1,23 @@
-TotalBalls = 3
-MaxPlayers = 4
-TimedMode = false
-BossyBonusFromGoal = true
-BallTimeSeconds = 9
-WarmupPeriodTimeSeconds = 9
-LogLevel = "debug"
-KeepAliveMS = 500
+totalballs = 3
+maxplayers = 4
+timedmode = false
+bossybonusfromgoal = true
+balltimeseconds = 9
+warmupperiodtimeseconds = 9
+loglevel = "debug"
+keepalivems = 500
+
+[goalie]
+    start_position = 30
+    center_position = 130
+    backoff_degrees = 5
+    limit_left = 170
+    limit_right = 30
+    target_g = 170
+    target_o = 150
+    target_a = 60
+    target_l = 30
+    device_address = "/dev/i2c-1"
+    pulse_min = 500
+    pulse_max = 2500
+    arc_range = 180
