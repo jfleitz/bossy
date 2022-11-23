@@ -1,16 +1,42 @@
 package main
 
+/*
+Arguments to support:
+
+* dumping the config file struct in a pretty json to confirm settings
+forcing the goalie to a specified position
+
+These are for command debugging from the machine:
+play sound
+pulse solenoid
+turn off all solenoids
+turn off all lamps
+flash lamp
+clear displays
+show on display
+
+
+*/
+
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
 
+	"github.com/jessevdk/go-flags"
 	"github.com/jfleitz/goflip/pkg/goflip"
 	log "github.com/sirupsen/logrus"
 )
 
 var game goflip.GoFlip
 var settings *config
+
+var opts struct {
+	ParseConfig bool `short:"c" long:"config" description:"Parse the config file and dump to console"`
+	Goalie      int  `short:"g" long:"goalie" description:"move the goalie to the position passed" default:"-1"`
+	Discover    bool `short:"d" long:"discover" description:"Scans for peripherals that are connected and writes to config"`
+}
 
 func init() {
 	var err error
@@ -21,21 +47,33 @@ func init() {
 	}
 
 	if lvl, err := log.ParseLevel(settings.LogLevel); err != nil {
-		fmt.Errorf("Error with log level in config: %v", err)
+		fmt.Printf("Error with log level in config: %v", err)
 	} else {
 		log.SetLevel(lvl)
 	}
 
 	log.SetOutput(os.Stdout)
-	log.Debugln("bossy init complete")
-	log.Printf("TotalBalls: %v\n", settings.TotalBalls)
-	log.Printf("BallTimeSeconds: %v\n", settings.BallTimeSeconds)
-	log.Printf("Start position: %v\n", settings.Goalie.StartPosition)
-	log.Printf("limitLeft position: %v\n", settings.Goalie.LimitLeft)
-
 }
 
 func main() {
+	_, err := flags.Parse(&opts)
+	if err != nil {
+		panic(err)
+	}
+
+	log.Debugf("Command Args passed: %v\n ", opts)
+
+	if opts.ParseConfig {
+		out, err := json.MarshalIndent(settings, "", "   ")
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Printf("Parsed Config options:\n")
+		fmt.Print(string(out), "\n")
+
+		return
+	}
+
 	game.Observers = []goflip.Observer{
 		new(bossyObserver),
 		new(goalObserver),
@@ -71,9 +109,18 @@ func main() {
 	initStats()
 	game.Init(switchHandler)
 
+	//see if we are just testing the goalie
+	if opts.Goalie >= 0 {
+		fmt.Printf("Moving goalie to %v, and sleeping for 2 seconds", opts.Goalie)
+		game.ServoAngle(opts.Goalie)
+		time.Sleep(time.Second * 2)
+		return
+	}
+
 	//go ahead and go to GameOver by default
 	game.ChangeGameState(goflip.GameOver)
-
+	//reader := bufio.NewReader(os.Stdin)
+	//TODO defer / send all device disconnects, cleanup etc.
 	for {
 		time.Sleep(1000 * time.Millisecond) //just keep sleeping
 		game.SendStats()

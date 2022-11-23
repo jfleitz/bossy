@@ -1,4 +1,9 @@
-/*Overtime awards. On the last ball, the overtime lights are lit.
+/*Overtime (extra ball).
+
+We need to determine when Extra Ball is lit. This is for overtime, which should be a tied game?
+
+
+On the last ball, the overtime lights are lit.
 For each time you hit one, 1 second is added to the overtime.
 If there are more than one player playing, whomever has the
 higher overtime value gets the timed extra ball.*/

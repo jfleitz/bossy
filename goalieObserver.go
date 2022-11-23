@@ -50,6 +50,10 @@ func (p *goalieObserver) SwitchHandler(sw goflip.SwitchEvent) {
 		return
 	}
 
+	if !settings.Goalie.DebugGoalie {
+		return
+	}
+
 	switch sw.SwitchID {
 	case swLeftTarget:
 		p.movePosition = settings.Goalie.TargetGLeft
@@ -151,10 +155,10 @@ func (p *goalieObserver) moveGoalie() {
 				time.Sleep(2 * time.Second)
 				game.ServoAngle(p.movePosition)
 
-				//repeat
+				if game.Quitting {
+					return
+				}
 			}
-
-			//JAF TODO we should sleep, or make this a channel actually...
 			time.Sleep(250 * time.Millisecond)
 		}
 	}()

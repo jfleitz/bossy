@@ -80,9 +80,9 @@ func (p *bossyObserver) PlayerUp(playerID int) {
 	p.firstShot = true
 	game.SolenoidFire(solOuthole)
 
-	//turn on appropriate Player Up Light (maybe blink it)
-	game.LampOff(lmpPlayer1, lmpPlayer2, lmpPlayer3, lmpPlayer4)
 	//turn off the other player up lights
+	game.LampOff(lmpPlayer1, lmpPlayer2, lmpPlayer3, lmpPlayer4)
+	//turn on appropriate Player Up Light
 	game.LampSlowBlink(lmpPlayer1 + playerID - 1)
 }
 
@@ -136,6 +136,6 @@ func (p *bossyObserver) GameOver() {
 func (p *bossyObserver) GameStart() {
 	log.Debugln("bossyObserver:GameStart()")
 	game.LampOff(lmpGameOver)
-	game.LampOn(lmpPeriod)
+	game.LampOn(lmpPeriod) //Ball in play light behind the backglass
 	game.FlipperControl(true)
 }

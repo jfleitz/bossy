@@ -36,6 +36,7 @@ type goalieConf struct {
 	PulseMin       float32 `toml:"pulse_min"`
 	PulseMax       float32 `toml:"pulse_max"`
 	ArcRange       int     `toml:"arc_range"`
+	DebugGoalie    bool    `toml:"debug_goalie"`
 }
 
 func loadConfiguration(file string) (*config, error) {
@@ -47,9 +48,6 @@ func loadConfiguration(file string) (*config, error) {
 
 		return c, err
 	}
-
-	fmt.Printf("Config example: %v\n", c.KeepAliveMS)
-	fmt.Printf("Config c.Goalie.startPosition: %v\n", c.Goalie.StartPosition)
 
 	return c, nil
 }

@@ -6,6 +6,7 @@ replace github.com/jfleitz/goflip v0.1.0 => /home/drjones/go/src/github.com/jfle
 
 require (
 	github.com/BurntSushi/toml v1.0.0
+	github.com/jessevdk/go-flags v1.5.0 // indirect
 	github.com/jfleitz/goflip v0.1.0
 	github.com/sirupsen/logrus v1.8.1
 )
