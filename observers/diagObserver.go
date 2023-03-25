@@ -1,6 +1,6 @@
-package main
+package observer
 
-/*diagObserver is for handling mostly the test switch
+/*DiagObserver is for handling mostly the test switch
  */
 
 import (
@@ -25,25 +25,28 @@ const (
 	maxTests = 5
 )
 
-type diagObserver struct {
+type DiagObserver struct {
 	//add your variables for the observer here
 	testMode     int
 	currentSound int8
 }
 
-/*the following line should be called to ensure that your observer DOES
+/*
+the following line should be called to ensure that your observer DOES
 implement the goflip.Observer interface:
 */
-var _ goflip.Observer = (*diagObserver)(nil)
+var _ goflip.Observer = (*DiagObserver)(nil)
 
-/*Init is called by goflip when the application is first started (Init). This
+/*
+Init is called by goflip when the application is first started (Init). This
 is called only once:
 */
-func (p *diagObserver) Init() {
+func (p *DiagObserver) Init() {
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
-	log.Debugln("diagObserver:Init called")
+	log.Debugln("DiagObserver:Init called")
 	p.testMode = notTesting
+	game := goflip.GetMachine()
 	game.TestMode = false
 }
 
@@ -52,24 +55,26 @@ routine must be kept as fast as possible. Make use of go routines when necessary
 Any delay in this routine can cause issues with latency
 */
 
-func (p *diagObserver) SwitchHandler(sw goflip.SwitchEvent) {
+func (p *DiagObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	if !sw.Pressed {
 		return
 	}
+	game := goflip.GetMachine()
+
 	switch sw.SwitchID {
-	case swTest:
+	case SwTest:
 		p.currentSound = 0 //always reset the sound when test is pressed
 		p.testMode++
 		if p.testMode > maxTests {
 			p.testMode = notTesting
 			game.TestMode = false
 			//JAF TODO need to reset the displays etc when exiting
-			game.ChangeGameState(goflip.GameOver)
+			goflip.ChangeGameState(goflip.GameEnded)
 		} else {
 			game.TestMode = true
 			p.runTest()
 		}
-	case swCredit:
+	case SwCredit:
 		if game.TestMode && (p.testMode == testSounds) {
 			//increment which sound is being tested
 			p.currentSound++
@@ -80,7 +85,7 @@ func (p *diagObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	}
 
 }
-func (p *diagObserver) runTest() {
+func (p *DiagObserver) runTest() {
 	switch p.testMode {
 	case testDisplays:
 		go p.testDisplays()
@@ -95,18 +100,18 @@ func (p *diagObserver) runTest() {
 	}
 }
 
-func (p *diagObserver) testDisplays() {
-	game.ClearScores()
+func (p *DiagObserver) testDisplays() {
+	goflip.ClearScores()
 	var score int32 = 1111111
 	var ball int8 = 11
 
 	for {
 		for disp := 1; disp < 5; disp++ {
-			game.SetDisplay(disp, score)
+			goflip.SetDisplay(disp, score)
 		}
 
-		game.SetCreditDisp(ball)
-		game.SetBallInPlayDisp(ball)
+		goflip.SetCreditDisp(ball)
+		goflip.SetBallInPlayDisp(ball)
 		score += 1111111
 		ball += 11
 
@@ -122,12 +127,12 @@ func (p *diagObserver) testDisplays() {
 	}
 }
 
-func (p *diagObserver) testAllLamps() {
+func (p *DiagObserver) testAllLamps() {
 	for {
-		game.LampOn(1)
-		game.SetBallInPlayDisp(0)
+		goflip.LampOn(1)
+		goflip.SetBallInPlayDisp(0)
 		time.Sleep(time.Second * 1)
-		game.LampOff(1)
+		goflip.LampOff(1)
 		time.Sleep(time.Second * 1)
 		if p.testMode != testAllLamps {
 			return
@@ -135,14 +140,14 @@ func (p *diagObserver) testAllLamps() {
 	}
 }
 
-func (p *diagObserver) testSounds() {
+func (p *DiagObserver) testSounds() {
 	var playedSound int8
 	playedSound = -1
 	for {
 		if playedSound != p.currentSound {
 			playedSound = p.currentSound
-			game.SetBallInPlayDisp(playedSound)
-			game.PlaySound(byte(playedSound))
+			goflip.SetBallInPlayDisp(playedSound)
+			goflip.PlaySound(byte(playedSound))
 		}
 
 		time.Sleep(500)
@@ -153,14 +158,14 @@ func (p *diagObserver) testSounds() {
 	}
 }
 
-func (p *diagObserver) testLamps() {
+func (p *DiagObserver) testLamps() {
 
 	for {
 		for id := 0; id < 65; id++ {
-			game.LampOn(id)
-			game.SetBallInPlayDisp(int8(id))
+			goflip.LampOn(id)
+			goflip.SetBallInPlayDisp(int8(id))
 			time.Sleep(time.Second * 1)
-			game.LampOff(id)
+			goflip.LampOff(id)
 
 			if p.testMode != testLamps {
 				return
@@ -169,11 +174,11 @@ func (p *diagObserver) testLamps() {
 	}
 }
 
-func (p *diagObserver) testSolenoids() {
+func (p *DiagObserver) testSolenoids() {
 	for {
 		for id := 0; id < 16; id++ {
-			game.SolenoidFire(id)
-			game.SetBallInPlayDisp(int8(id))
+			goflip.SolenoidFire(id)
+			goflip.SetBallInPlayDisp(int8(id))
 			time.Sleep(time.Second * 1)
 
 			if p.testMode != testSolenoids {
@@ -184,46 +189,52 @@ func (p *diagObserver) testSolenoids() {
 }
 
 /*BallDrained is called whenever a ball is drained on the playfield (Before PlayerEnd)*/
-func (p *diagObserver) BallDrained() {
+func (p *DiagObserver) BallDrained() {
 
 }
 
-/*PlayerUp is called after the ball is launched from the Ball Trough for the next ball up
-playerID is the player that is now up*/
-func (p *diagObserver) PlayerUp(playerID int) {
-	log.Debugln("diagObserver:PlayerUp()")
+/*
+PlayerUp is called after the ball is launched from the Ball Trough for the next ball up
+playerID is the player that is now up
+*/
+func (p *DiagObserver) PlayerUp(playerID int) {
+	log.Debugln("DiagObserver:PlayerUp()")
 }
 
 /*PlayerEnd is called after every ball for the player is over*/
-func (p *diagObserver) PlayerEnd(playerID int, wait *sync.WaitGroup) {
+func (p *DiagObserver) PlayerEnd(playerID int, wait *sync.WaitGroup) {
 	defer wait.Done()
-	log.Debugln("diagObserver:PlayerEnd()")
+	log.Debugln("DiagObserver:PlayerEnd()")
 }
 
 /*PlayerStart is called the very first time a player is playing (their first Ball1)
  */
-func (p *diagObserver) PlayerStart(playerID int) {
-	log.Debugln("diagObserver:PlayerStart()")
+func (p *DiagObserver) PlayerStart(playerID int) {
+	log.Debugln("DiagObserver:PlayerStart()")
 }
 
-/*PlayerEnd is called after the very last ball for the player is over
-(after ball 3 for example)*/
-func (p *diagObserver) PlayerFinish(playerID int) {
-	log.Debugln("diagObserver:PlayerFinish()")
+/*
+PlayerEnd is called after the very last ball for the player is over
+(after ball 3 for example)
+*/
+func (p *DiagObserver) PlayerFinish(playerID int) {
+	log.Debugln("DiagObserver:PlayerFinish()")
 }
 
 /*PlayerAdded is called after a player is added by the credit button, and after the GameStart event*/
-func (p *diagObserver) PlayerAdded(playerID int) {
-	log.Debugln("diagObserver:PlayerAdded()")
+func (p *DiagObserver) PlayerAdded(playerID int) {
+	log.Debugln("DiagObserver:PlayerAdded()")
 }
 
-/*GameOver is called after the last player of the last ball is drained, before the game goes
-into the GameOver mode*/
-func (p *diagObserver) GameOver() {
-	log.Debugln("diagObserver:GameOver()")
+/*
+GameOver is called after the last player of the last ball is drained, before the game goes
+into the GameOver mode
+*/
+func (p *DiagObserver) GameOver() {
+	log.Debugln("DiagObserver:GameOver()")
 }
 
 /*GameStart is called whenever a new game is started*/
-func (p *diagObserver) GameStart() {
-	log.Debugln("diagObserver:GameStart()")
+func (p *DiagObserver) GameStart() {
+	log.Debugln("DiagObserver:GameStart()")
 }

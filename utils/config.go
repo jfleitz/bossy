@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-type config struct {
+type Config struct {
 	TotalBalls              int
 	MaxPlayers              int
 	TimedMode               bool
@@ -16,10 +16,12 @@ type config struct {
 	LogLevel                string
 	KeepAliveMS             int
 
-	Goalie goalieConf
+	Goalie GoalieConf
 }
 
-type goalieConf struct {
+var conf *Config
+
+type GoalieConf struct {
 	StartPosition  int     `toml:"start_position"`
 	CenterPosition int     `toml:"center_position"`
 	LimitLeft      int     `toml:"limit_left"`
@@ -39,15 +41,20 @@ type goalieConf struct {
 	DebugGoalie    bool    `toml:"debug_goalie"`
 }
 
-func loadConfiguration(file string) (*config, error) {
-	c := new(config)
+func LoadConfiguration(file string) error {
+	conf := new(Config)
 
-	if _, err := toml.DecodeFile(file, &c); err != nil {
+	if _, err := toml.DecodeFile(file, &conf); err != nil {
 		fmt.Printf("Could not load conf file %v\n", file)
 		fmt.Println(err)
 
-		return c, err
+		return err
 	}
 
-	return c, nil
+	return nil
+}
+
+func Settings() Config {
+	//todo JAF lock and initialize this..
+	return *conf
 }
