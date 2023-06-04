@@ -6,6 +6,7 @@ balltimeseconds = 9
 warmupperiodtimeseconds = 9
 loglevel = "debug"
 keepalivems = 500
+consolemode = true
 
 [goalie]
     start_position = 30

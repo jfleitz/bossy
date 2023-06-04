@@ -15,6 +15,7 @@ type Config struct {
 	WarmupPeriodTimeSeconds int
 	LogLevel                string
 	KeepAliveMS             int
+	ConsoleMode             bool //For testing
 
 	Goalie GoalieConf
 }
@@ -42,7 +43,7 @@ type GoalieConf struct {
 }
 
 func LoadConfiguration(file string) error {
-	conf := new(Config)
+	conf = new(Config)
 
 	if _, err := toml.DecodeFile(file, &conf); err != nil {
 		fmt.Printf("Could not load conf file %v\n", file)

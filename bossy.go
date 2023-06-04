@@ -31,8 +31,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var game goflip.GoFlip
-
 var opts struct {
 	ParseConfig bool `short:"c" long:"config" description:"Parse the config file and dump to console"`
 	Goalie      int  `short:"g" long:"goalie" description:"move the goalie to the position passed" default:"-1"`
@@ -40,8 +38,7 @@ var opts struct {
 }
 
 func init() {
-	var err error
-	err = utils.LoadConfiguration("config.toml")
+	err := utils.LoadConfiguration("config.toml")
 
 	if err != nil {
 		os.Exit(1)
@@ -54,6 +51,7 @@ func init() {
 	}
 
 	log.SetOutput(os.Stdout)
+
 }
 
 func main() {
@@ -74,6 +72,10 @@ func main() {
 
 		return
 	}
+
+	game := goflip.GetMachine()
+
+	game.ConsoleMode = utils.Settings().ConsoleMode
 
 	game.Observers = []goflip.Observer{
 		new(observer.BossyObserver),
@@ -149,6 +151,7 @@ func switchHandler(sw goflip.SwitchEvent) {
 
 		return
 	}
+	game := goflip.GetMachine()
 
 	switch sw.SwitchID {
 	case observer.SwOuthole:
@@ -237,6 +240,7 @@ func saucerControl() {
 	go func() {
 		goflip.PlaySound(observer.SndSaucer)
 		time.Sleep(2 * time.Second)
+		game := goflip.GetMachine()
 		totalLetters := utils.GetPlayerStat(game.CurrentPlayer, observer.BipShotCount)
 
 		addThousands(totalLetters * 1000)
@@ -250,6 +254,8 @@ func saucerControl() {
 }
 
 func creditControl() {
+	game := goflip.GetMachine()
+
 	if goflip.GetGameState() == goflip.GameEnded {
 		goflip.ChangeGameState(goflip.InProgress)
 		goflip.AddPlayer() // go ahead and add player 1
