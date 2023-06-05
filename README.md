@@ -1,45 +1,64 @@
 # bossy
-GO Source for Game Plan Mike Bossy pinball machine utilizing the goflip library.
+Game Plan Mike Bossy pinball machine utilizing the goflip library.
 
 ## Introduction
 The Mike Bossy pinball machine never made it to production. There was one made for the 1982 AMOA show (confirmed - Roger Sharpe wrote a review of it for  Play Meter magazine Feb 15,1982), however it doesn't match what the flyer said the game was going to be, and the review didn't make it sound like it was "a true Hockey experience".
 
-The original roms cannot be found. There are a few "Bossy game roms" floating out there, but they are garbage. Therefore, the game is being redone with a more hockey feel, without making any changes to the playfield design. 
+The original roms cannot be found. There are a few "Bossy game roms" floating out there, but they are garbage and don't boot. Therefore, the game is being redone keeping hockey feel in mind that the flyer calls out, without making any changes to the playfield design. 
 
 Check out the playfield layout on ipdb: http://www.ipdb.org/machine.cgi?id=1596
 
 ## Overview of Rules
-The playfield layout is very basic, like a hockey rink! You are the islanders. The defense (Must be penguins or bruins, since black and yellow) is the goalie, pop bumpers and kickers.
+The playfield layout is very basic, like a hockey rink! You are the islanders. The defense (Must be penguins or bruins, since black and yellow) is the goalie, pop bumpers and kickers. You are playing with the Trio Grande line; the bottom flippers are Bryan Trottier and Clark Gillies, with Mike Bossy as the top right flipper.
 
-The use of the white spots on the playfield is used for lighting up where to pass the puck (See "Pucks"). Hitting a lit "puck shot" awards another letter in the M-I-K-E B-O-S-S-Y bonus bank. You cash out the selected letters by scoring a goal. 
+## Spots
+* The use of the white spots on the playfield is used for lighting up the shot you need to make with the puck. All spots are lit up at the beginning of the ball. Hitting a lit "puck shot" awards the next letter in the M-I-K-E B-O-S-S-Y bonus bank, and the white spot will be turned off.
 
-Some Hockey player specific scoring has been added to, including Hat Trick (3 timed-goals from the same flipper with the same ball in play), and Trio Grande (Timed goal by using each flipper and the saucer) with the same ball in play.
+* Ths top saucer is Mr. Bossy himself, and awards 300 points. Immediately hitting a goal,all spotted letters will be collected X1000 points.
 
+## Goalie
+Don't hit the goalie! Each time you hit the goalie a letter is taken back from the letter bank and a spot is turned on the playfield. You are awarded 1000 points for the Shot on Goal. 
 
-## More Detail of rules..
-* Pucks - The playfield has white spots. These spots are considered to be hockey pucks. Only one is lit at a time. When you "hit the puck", the next MIKE BOSSY letter is sequentially lit, and another puck location is chosen random. When choosing at random, the "MIKE BOSSY" lights are lit up in a circular fashion until the first target hit after 2 MIKE BOSSY Light sequences(1).
-    * (1) This is to prevent someone from capturing the ball and seeing where the lit puck will be.
+## Goals
+* A goal is scored by hitting one of the drop targets down behind the goalie, or the back behind the drop targets.
 
+* Scoring a goal awards you 500 points. The number of goals scored during your ball is used in the end of ball bonus.
 
-* 9 second warm up period - This is from the original game. Basically a ball save for 9 seconds. You can't hit a goal at this time (or it won't count). It allows you to build up the number of pucks collected (Mike Bossy letters) when you do hit a goal. This starts after the ball leaves the shooter lane switch (switch up event)
+* Hitting all drop targets down during a ball awards a 5000 points, and adds 5000 points to your bonus.
+* On the third drop target bank completion, special is lit.
 
-* Goal - When a goal is hit, the pucks collected (MIKE BOSSY letters) are cashed in for points. The MIKE BOSSY letters are cleared back to zero (2). A 5000 Bonus light at the bottom is lit up for each goal scored. Goals are 10,000 for each letter lit plus 10,000 (up to 100,000 points)
-    * (2) Even though the letters are cleared, the total "Letter count" for each player is kept during the ball being played, so that the total Letters collected will be awarded in the bonus calculation.
+## End of Ball Bonus
+* At the end of a ball, you are rewarded a 1000 point bonus for each Letter spotted. You can complete the letter bank up to 3 times (27 letters), designated by the two White indicators below the M-I-K-E B-O-S-S-Y letters.
 
-* Bonus  - For each goal you get 5000 bonus light lit. At the end of the ball, the total number of letters * the 5000 will be awarded as a bonus. Example, if you spell MIKE BOSSY twice, and get MIK = that is 21 letters. You have 2 of the 5000 bonus lights lit, so you get 21 times 10,000 = 210,000 for a bonus.
+* A goal scored is treated as a bonus multiplier. Therefore, if you scored 2 goals and had 8 letters spotted, you will get 2 goals X 8 letters X 1000 points = 16000 for your bonus from the Spotted Letters.
+
+* 5000 points will be added to your bonus for each G-O-A-L target bank completion. Up to 9 Goals (45000 points) are indicated by the bonus lights
+
+## Additional Period info
+* 9 second warm up period - This is from the original game. Basically a ball save for 9 seconds. You can't hit a goal at this time (or it won't count). It allows you to collect letters though without a goalie taking them away from you.
 
 * Overtime awards. On the last ball, the overtime lights are lit. For each time you hit one, 1 second is added to the overtime. If there are more than one player playing, whomever has the higher overtime value gets the timed extra ball.
 
-* Hat Trick - If you hit 3 goals in the same game by the same flipper.
-    * For the lower flippers, a goal must be scored within 3 seconds after the ball goes from one of the flipper inlanes to be counted toward the "Hat Trick count" for that flipper.
-    * For the upper flipper, a goal must be scored within 2 seconds after the ball is ejected from the saucer to be counted toward the "Hat Trick count" of the upper flipper. 
-    * For each Hat Trick (3 shots by the same flipper), 22,000 points is awarded. 
+### Things to work out
+[] servo: Add Goalie servo control based on which targets are standing
+[x] spot: light all spots up
+[x] spot: as a spot is hit, light the next letter
+[x] spot: when a letter is added back (by the goalie) add it back to one of the empty spots
+[] saucer: when you hit the saucer, then the next shot is one of the goal switches, award the # of letters collected x 1000
+[x] goal: Hitting all drop targets down during a ball awards a 5000 points, and adds 5000 points to your bonus.
+[x] bonus: # of goals X letters is letter bonus, add 5000 to the bonus for each complete goal targets
+[] overtime tracking..last ball, every overtime shot flash and add to second counter
 
-* Trio Grande Line - This is to pay homage to the best hockey line in NHL History; Bryan Trottier, Clark Gillies, and Mike Bossy forming the Trio Grande line (4 consecutive Stanley Cup wins). Similar to Hat Trick, this is based on timing from the flipper inlane switches and the saucer switch. You must complete each within 5 seconds of each other. Once you do so, the Goal light will blink to signify you have Trio Grande ready. Hitting the goal will award you with 220,000 points.
-    * In any order, you must hit within 5 seconds of each other:
-        * Either Left Flipper Inlane switch
-        * Either Right Flipper Inlane switch
-        * The Upper Right saucer
-    * Score a goal
-    * Scoring a goal prior to the the above will cancel the hat trick sequence.
-    * This will flash the Goal Light and make the next goal 220,000 points
+### Goalie
+Goalie shold rest toward the right / fully extended when GameOver
+When Game is Started, Goalie should move to Center (on ball launch to trough)
+
+Goalie should move as followed:
+LOW=Farthest standing left Target sets the left range, Farthest right Target sets the right range
+
+As switches are hit on the left, the goalie should move between LOW and half to HIGH
+
+As switches are hit on the right, the goalie should move between half to HIGH and HIGH
+
+When a saucer is hit, the goalie should move to the right, then go back and forth from low to high.
+

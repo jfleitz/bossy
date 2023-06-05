@@ -21,10 +21,7 @@ build:
 
 build_rpi:
 	@echo "Building for Raspberry PI"
-	export GOOS=linux
-	export GOARCH=arm
-	export GOARM=6
-	@go build
+	@env GOOS=linux GOARCH=arm GOARM=7 go build
 
 
 godeps:

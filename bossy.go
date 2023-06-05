@@ -1,69 +1,133 @@
 package main
 
 /*
-TODO/Notes:
-Warm Up period..when this is going, all puck lights should be on (flashing).
-You collect each (which goes to fast flash, then back to slow flash)
-...so WarmUp period should control anything puck related (not have puckChase and warmUp communicate).
-This will make things neater/more maintainable in code.
+Arguments to support:
 
+* dumping the config file struct in a pretty json to confirm settings
+forcing the goalie to a specified position
+
+These are for command debugging from the machine:
+play sound
+pulse solenoid
+turn off all solenoids
+turn off all lamps
+flash lamp
+clear displays
+show on display
 
 
 */
 
 import (
+	"encoding/json"
+	"fmt"
 	"os"
 	"time"
 
+	"github.com/jessevdk/go-flags"
+	observer "github.com/jfleitz/bossy/observers"
+	"github.com/jfleitz/bossy/utils"
 	"github.com/jfleitz/goflip/pkg/goflip"
 	log "github.com/sirupsen/logrus"
 )
 
-func init() {
-	settings = loadConfiguration("config.json")
-	log.SetLevel(log.DebugLevel)
-	log.SetOutput(os.Stdout)
-	log.Infoln("bossy init complete")
+var opts struct {
+	ParseConfig bool `short:"c" long:"config" description:"Parse the config file and dump to console"`
+	Goalie      int  `short:"g" long:"goalie" description:"move the goalie to the position passed" default:"-1"`
+	Discover    bool `short:"d" long:"discover" description:"Scans for peripherals that are connected and writes to config"`
 }
 
-var game goflip.GoFlip
-var settings config
+func init() {
+	err := utils.LoadConfiguration("config.toml")
 
-func main() {
-	//	var p *puckChase
-	//	var g *goalObserver
-	//	p = new(puckChase)
-	//	g = new(goalObserver)
-	game.Observers = []goflip.Observer{
-		new(bossyObserver),
-		new(puckChase),
-		new(goalObserver),
-		new(endOfBallBonus),
-		new(hatTrick),
-		//new(lilcoLine),
-		//new(collectOvertime),
-		//new(overTimeObserver),
-		new(warmUpPeriodObserver),
+	if err != nil {
+		os.Exit(1)
 	}
 
-	game.DiagObserver = new(diagObserver)
+	if lvl, err := log.ParseLevel(utils.Settings().LogLevel); err != nil {
+		fmt.Printf("Error with log level in config: %v", err)
+	} else {
+		log.SetLevel(lvl)
+	}
 
-	inWarmUpPeriod = false
+	log.SetOutput(os.Stdout)
+
+}
+
+func main() {
+	_, err := flags.Parse(&opts)
+	if err != nil {
+		panic(err)
+	}
+
+	log.Debugf("Command Args passed: %v\n ", opts)
+
+	if opts.ParseConfig {
+		out, err := json.MarshalIndent(utils.Settings(), "", "   ")
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Printf("Parsed Config options:\n")
+		fmt.Print(string(out), "\n")
+
+		return
+	}
+
+	game := goflip.GetMachine()
+
+	game.ConsoleMode = utils.Settings().ConsoleMode
+
+	game.Observers = []goflip.Observer{
+		new(observer.BossyObserver),
+		new(observer.GoalObserver),
+		//new(warmUpPeriodObserver),
+		new(observer.ShotObserver),
+		new(observer.EndOfBallBonus),
+		new(observer.AttractMode),
+		//new(collectOvertime),
+		//new(overTimeObserver),
+		new(observer.GoalieObserver),
+	}
+
+	game.DiagObserver = new(observer.DiagObserver)
 
 	//Set the game limitations here
-	game.TotalBalls = settings.TotalBalls
-	game.MaxPlayers = settings.MaxPlayers
+	game.TotalBalls = utils.Settings().TotalBalls
+	game.MaxPlayers = utils.Settings().MaxPlayers
+	game.Credits = 0
+
+	//Set Goalie Servo control params
+	game.PWMPortConfig.ArcRange = utils.Settings().Goalie.ArcRange
+	game.PWMPortConfig.PulseMax = utils.Settings().Goalie.PulseMax
+	game.PWMPortConfig.PulseMin = utils.Settings().Goalie.PulseMin
+	game.PWMPortConfig.DeviceAddress = utils.Settings().Goalie.DeviceAddress
+
+	log.Debugf("Main, warmupseconds is: %v\n", utils.Settings().WarmupPeriodTimeSeconds)
 
 	//set the game initalizations here
 	game.BallInPlay = 0
 	game.CurrentPlayer = 0
-	initStats()
-	game.Init(switchHandler)
+	utils.InitStats()
+	if !game.Init(switchHandler) {
+		log.Errorln("Error in initializing goFlip package")
+		return
+	}
 
+	//see if we are just testing the goalie
+	if opts.Goalie >= 0 {
+		fmt.Printf("Moving goalie to %v, and sleeping for 2 seconds", opts.Goalie)
+		goflip.ServoAngle(opts.Goalie)
+		time.Sleep(time.Second * 2)
+		return
+	}
+
+	//go ahead and go to GameOver by default
+	goflip.ChangeGameState(goflip.GameEnded)
+	//reader := bufio.NewReader(os.Stdin)
+	//TODO defer / send all device disconnects, cleanup etc.
 	for {
 		time.Sleep(1000 * time.Millisecond) //just keep sleeping
-		game.SendStats()
-		//log.Infoln("Still Looping ", time.Now)
+		goflip.SendStats()
 	}
 }
 
@@ -73,140 +137,153 @@ func switchHandler(sw goflip.SwitchEvent) {
 		return
 	}
 
-	log.Infof("Bossy switchHandler. Receivied SwitchID=%d Pressed=%v\n", sw.SwitchID, sw.Pressed)
+	log.Debugf("Bossy switchHandler. Receivied SwitchID=%d Pressed=%v\n", sw.SwitchID, sw.Pressed)
 
-	if !game.GameRunning {
+	if goflip.GetGameState() == goflip.GameEnded {
 		//only care about switches that matter when a game is not running
 		switch sw.SwitchID {
-		case swSaucer:
-			game.SolenoidFire(solSaucer)
-		case swCredit:
+		case observer.SwSaucer:
+			goflip.SolenoidFire(observer.SolSaucer)
+		case observer.SwCredit:
 			//start game
 			go creditControl()
 		}
 
 		return
 	}
+	game := goflip.GetMachine()
 
 	switch sw.SwitchID {
-	case swOuthole:
+	case observer.SwOuthole:
 		//ball over
-		log.Infoln("outhole: switch pressed")
-		game.BallDrained()
+		log.Debugln("outhole: switch pressed")
+		goflip.BallDrained()
 
-	case swCredit:
+	case observer.SwCredit:
 		go creditControl()
-	case swShooterLane:
-		game.PlaySound(sndBallLaunch)
-	case swTest:
-	case swCoin:
-	case swInnerRightLane:
-		game.AddScore(1000)
-		game.PlaySound(sndFiring)
-	case swMiddleRightLane:
-		game.AddScore(1000)
-		game.PlaySound(sndFiring)
-	case SwOuterRightLane:
-		game.AddScore(5000)
-		game.PlaySound(sndFiring)
-	case swOuterLeftLane:
-		game.AddScore(5000)
-		game.PlaySound(sndOutlane)
-	case swMiddleLeftLane:
-		game.AddScore(1000)
-		game.PlaySound(sndFiring)
-	case swInnerLeftLane:
-		game.AddScore(1000)
-		game.PlaySound(sndFiring)
-	case swRightSlingshot:
-		game.AddScore(100)
-		game.PlaySound(sndPuckBounce)
-		game.SolenoidFire(solRightSlingshot)
-	case swLeftSlingshot:
-		//which one is this??
-		game.AddScore(100)
-		game.PlaySound(sndPuckBounce)
-		game.SolenoidFire(solLeftSlingshot)
-
-	case swLowerRightTarget:
-		game.AddScore(1000)
-		game.PlaySound(sndTargets)
-	case swMiddleRightTarget:
-		game.AddScore(300)
-		game.PlaySound(sndTargets)
-	case swUpperRightTarget:
-		game.AddScore(1000)
-		game.PlaySound(sndTargets)
-	case swSaucer:
-		game.AddScore(300)
+	case observer.SwShooterLane:
+		//		game.PlaySound(sndShooter) //play elsewhere
+	case observer.SwTest:
+	case observer.SwCoin:
+		game.Credits++
+		goflip.SetCreditDisp(int8(game.Credits))
+	case observer.SwInnerRightLane:
+		addThousands(1000)
+	case observer.SwMiddleRightLane:
+		addThousands(1000)
+	case observer.SwOuterRightLane:
+		addThousands(5000)
+	case observer.SwOuterLeftLane:
+		addThousands(5000)
+	case observer.SwMiddleLeftLane:
+		addThousands(1000)
+	case observer.SwInnerLeftLane:
+		addThousands(1000)
+	case observer.SwRightSlingshot:
+		goflip.SolenoidFire(observer.SolRightSlingshot)
+		goflip.AddScore(100)
+		goflip.PlaySound(observer.SndSlingshot)
+	case observer.SwLeftSlingshot:
+		goflip.SolenoidFire(observer.SolLeftSlingshot)
+		goflip.AddScore(100)
+		goflip.PlaySound(observer.SndSlingshot)
+	case observer.SwLowerRightTarget:
+		goflip.AddScore(1000)
+		goflip.PlaySound(observer.SndTargets)
+	case observer.SwMiddleRightTarget:
+		goflip.AddScore(300)
+		goflip.PlaySound(observer.SndTargets)
+	case observer.SwUpperRightTarget:
+		goflip.AddScore(1000)
+		goflip.PlaySound(observer.SndTargets)
+	case observer.SwSaucer:
+		addHundreds(300)
 		go saucerControl()
-	case swLeftPointLane:
-		game.AddScore(1000)
-		game.PlaySound(sndFiring)
-	case swLeftTarget:
-		game.AddScore(300)
-		game.PlaySound(sndTargets)
-	case swLeftBumper:
-		game.AddScore(100)
-		game.PlaySound(sndPuckBounce)
-		game.SolenoidOnDuration(solLeftBumper, 4)
-	case swRightBumper:
-		game.AddScore(100)
-		game.PlaySound(sndPuckBounce)
-		game.SolenoidOnDuration(solRightBumper, 4)
-	case swBehindGoalLane:
-		game.AddScore(1000)
-	case swGoalie:
-		//game.AddScore(1000) handled by goalObserver
-	case swTopLeftLane:
+	case observer.SwLeftPointLane:
+		addThousands(1000)
+	case observer.SwLeftTarget:
+		goflip.AddScore(300)
+		goflip.PlaySound(observer.SndTargets)
+	case observer.SwLeftBumper:
+		goflip.SolenoidOnDuration(observer.SolLeftBumper, 4)
+		goflip.AddScore(100)
+		goflip.PlaySound(observer.SndBumper)
+	case observer.SwRightBumper:
+		goflip.SolenoidOnDuration(observer.SolRightBumper, 4)
+		goflip.AddScore(100)
+		goflip.PlaySound(observer.SndBumper)
+	case observer.SwBehindGoalLane:
+		addThousands(1000)
+	case observer.SwGoalie:
+		//game.AddScore(1000) handled by shotObserver
+	case observer.SwTopLeftLane:
 		//game.LampOn(lmpTopLeftLane)
-		game.AddScore(300)
-		game.PlaySound(sndTargets)
-	case swTopMiddleLane:
-		game.AddScore(300)
+		goflip.AddScore(300)
+		goflip.PlaySound(observer.SndTopLane)
+	case observer.SwTopMiddleLane:
+		goflip.AddScore(300)
 		//game.LampOn(lmpTopMiddleLane)
-		game.PlaySound(sndTargets)
-	case swTopRightLane:
-		game.AddScore(300)
+		goflip.PlaySound(observer.SndTopLane)
+	case observer.SwTopRightLane:
+		goflip.AddScore(300)
 		//game.LampOn(lmpTopRightLane)
-		game.PlaySound(sndTargets)
-	case swTargetG:
-		game.AddScore(1000)
-		game.PlaySound(sndRaRa)
-	case swTargetO:
-		game.AddScore(1000)
-		game.PlaySound(sndRaRa)
-	case swTargetA:
-		game.AddScore(1000)
-		game.PlaySound(sndRaRa)
-	case swTargetL:
-		game.AddScore(1000)
-		game.PlaySound(sndRaRa)
-
+		goflip.PlaySound(observer.SndTopLane)
+	case observer.SwTargetG:
+	case observer.SwTargetO:
+	case observer.SwTargetA:
+	case observer.SwTargetL:
 	}
 }
 
 func saucerControl() {
-	game.PlaySound(sndRaRa)
-	time.Sleep(3500 * time.Millisecond)
-	game.SolenoidFire(solSaucer)
+	//JAF TODO: If BossyBonusFromGoal is set, then start the timer to hit a goal and then collect the bonus
+	go func() {
+		goflip.PlaySound(observer.SndSaucer)
+		time.Sleep(2 * time.Second)
+		game := goflip.GetMachine()
+		totalLetters := utils.GetPlayerStat(game.CurrentPlayer, observer.BipShotCount)
+
+		addThousands(totalLetters * 1000)
+
+		if totalLetters == 0 {
+			time.Sleep(1 * time.Second)
+		}
+
+		goflip.SolenoidFire(observer.SolSaucer)
+	}()
 }
 
 func creditControl() {
-	if !game.GameRunning {
-		game.GameStart()
-		game.AddPlayer() // go ahead and add player 1
-		game.PlayerUp()
+	game := goflip.GetMachine()
+
+	if goflip.GetGameState() == goflip.GameEnded {
+		goflip.ChangeGameState(goflip.InProgress)
+		goflip.AddPlayer() // go ahead and add player 1
+		goflip.ChangePlayerState(goflip.UpPlayer)
 	} else {
 		if game.BallInPlay == 1 {
-			game.AddPlayer()
+			goflip.AddPlayer()
 		}
 	}
 }
 
-func ballLaunch() {
-	//	game.NextUp()
-	///	game.PlaySound(sndWhistle)
-	time.Sleep(1 * time.Second)
-	game.SolenoidFire(solOuthole)
+// Incremental scoring with sounds..
+func addHundreds(points int) {
+	go func() {
+		for i := 1; i <= points/100; i++ {
+			goflip.AddScore(100)
+			goflip.PlaySound(observer.Snd100Points)
+			time.Sleep(250 * time.Millisecond)
+		}
+	}()
+}
+
+func addThousands(points int) {
+	go func() {
+		for i := 1; i <= points/1000; i++ {
+			goflip.AddScore(1000)
+			goflip.PlaySound(observer.Snd1000Points)
+			time.Sleep(250 * time.Millisecond)
+		}
+	}()
 }

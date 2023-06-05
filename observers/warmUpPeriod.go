@@ -1,6 +1,7 @@
-package main
+package observer
 
 import (
+	"sync"
 	"time"
 
 	"github.com/jfleitz/goflip/pkg/goflip"
@@ -19,33 +20,39 @@ type warmUpPeriodObserver struct {
 	startWarmUp    bool
 }
 
-/*the following line should be called to ensure that your observer DOES
+/*
+the following line should be called to ensure that your observer DOES
 implement the goflip.Observer interface:
 */
 var _ goflip.Observer = (*warmUpPeriodObserver)(nil)
 
-/*Init is called by goflip when the application is first started (Init). This
+/*
+Init is called by goflip when the application is first started (Init). This
 is called only once:
 */
 func (p *warmUpPeriodObserver) Init() {
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
-	log.Infoln("warmUpPeriodObserver:Init called")
+	log.Debugln("warmUpPeriodObserver:Init called")
 
 }
 
-/*SwitchHandler is called any time a switch event is received by goflip. This
+/*
+SwitchHandler is called any time a switch event is received by goflip. This
 routine must be kept as fast as possible. Make use of go routines when necessary
 Any delay in this routine can cause issues with latency
 */
 func (p *warmUpPeriodObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	//start the warm up period after the ball is launched, and only for the first time
-	if sw.SwitchID == swShooterLane &&
+	if sw.SwitchID == SwShooterLane &&
 		p.startWarmUp {
 		if sw.Pressed {
-			log.Infoln("warmupPeriod starting after ball launch")
+			log.Debugln("warmupPeriod starting after ball launch")
 		} else {
-			startWarmUpPeriod()
+			if !inWarmUpPeriod {
+				p.startWarmUp = false
+				startWarmUpPeriod(10) //change this to config
+			}
 		}
 	}
 }
@@ -55,28 +62,31 @@ func (p *warmUpPeriodObserver) BallDrained() {
 
 }
 
-/*PlayerUp is called after the ball is launched from the Ball Trough for the next ball up
-playerID is the player that is now up*/
+/*
+PlayerUp is called after the ball is launched from the Ball Trough for the next ball up
+playerID is the player that is now up
+*/
 func (p *warmUpPeriodObserver) PlayerUp(playerID int) {
-	log.Infoln("PlayerUp: startWarmUp false")
-	p.startWarmUp = false
 
 }
 
 /*PlayerStart is called the very first time a player is playing (their first Ball1)
  */
 func (p *warmUpPeriodObserver) PlayerStart(playerID int) {
-	log.Infoln("PlayerUp: startWarmUp true")
+	log.Debugln("PlayerUp: startWarmUp true")
 	p.startWarmUp = true
 }
 
 /*PlayerEnd is called after thet ball for the player is over*/
-func (p *warmUpPeriodObserver) PlayerEnd(playerID int) {
-
+func (p *warmUpPeriodObserver) PlayerEnd(playerID int, wait *sync.WaitGroup) {
+	p.startWarmUp = false
+	defer wait.Done()
 }
 
-/*PlayerFinish is called after the very last ball for the player is over
-(after ball 3 for example)*/
+/*
+PlayerFinish is called after the very last ball for the player is over
+(after ball 3 for example)
+*/
 func (p *warmUpPeriodObserver) PlayerFinish(playerID int) {
 
 }
@@ -86,8 +96,10 @@ func (p *warmUpPeriodObserver) PlayerAdded(playerID int) {
 
 }
 
-/*GameOver is called after the last player of the last ball is drained, before the game goes
-into the GameOver mode*/
+/*
+GameOver is called after the last player of the last ball is drained, before the game goes
+into the GameOver mode
+*/
 func (p *warmUpPeriodObserver) GameOver() {
 
 }
@@ -97,26 +109,31 @@ func (p *warmUpPeriodObserver) GameStart() {
 	p.warmUpComplete = false
 }
 
-func startWarmUpPeriod() {
+func startWarmUpPeriod(totalSeconds int) {
+	if inWarmUpPeriod {
+		return
+	}
+
 	go func() {
 		inWarmUpPeriod = true
 		cancelWarmUp = false
-
 		defer func() {
-			game.LampOff(lmpSamePlayerShootAgain)
+			goflip.LampOff(LmpSamePlayerShootAgain)
 			inWarmUpPeriod = false
 			cancelWarmUp = false
-			log.Infoln("Warmup Period complete")
+			log.Debugln("Warmup Period complete")
 		}()
 
-		for elapsedTime := 0; elapsedTime < settings.WarmupPeriodTimeSeconds; elapsedTime++ {
-			if elapsedTime > settings.WarmupPeriodTimeSeconds-2 {
-				game.LampFlastBlink(lmpSamePlayerShootAgain)
-			} else if elapsedTime > settings.WarmupPeriodTimeSeconds-5 {
-				game.LampSlowBlink(lmpSamePlayerShootAgain)
+		for elapsedTime := 0; elapsedTime < totalSeconds; elapsedTime++ {
+			if elapsedTime > totalSeconds-3 {
+				goflip.LampFastBlink(LmpSamePlayerShootAgain)
+			} else if elapsedTime > totalSeconds-6 {
+				goflip.LampSlowBlink(LmpSamePlayerShootAgain)
 			} else {
-				game.LampOn(lmpSamePlayerShootAgain)
+				goflip.LampOn(LmpSamePlayerShootAgain)
 			}
+
+			goflip.PlaySound(SndWarmUp)
 			sleepAndCheck(1)
 		}
 	}()
