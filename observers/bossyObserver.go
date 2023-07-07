@@ -84,7 +84,9 @@ playerID is the player that is now up
 func (p *BossyObserver) PlayerUp(playerID int) {
 	log.Debugf("bossyObsv:PlayerUp() for player %d", playerID)
 	p.firstShot = true
-	goflip.SolenoidFire(SolOuthole)
+	goflip.SolenoidFire(SolDropTargets)
+
+	BallLaunch()
 
 	//turn off the other player up lights
 	goflip.LampOff(LmpPlayer1, LmpPlayer2, LmpPlayer3, LmpPlayer4)

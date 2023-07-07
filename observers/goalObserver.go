@@ -55,6 +55,10 @@ func (p *GoalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 		return
 	}
 
+	if goflip.GetGameState() != goflip.InProgress {
+		return
+	}
+
 	switch sw.SwitchID {
 	case SwTargetG:
 		break
@@ -120,9 +124,6 @@ playerID is the player that is now up
 func (p *GoalObserver) PlayerUp(playerID int) {
 	game := goflip.GetMachine()
 
-	log.Debugln("Firing Drop Targets")
-	goflip.SolenoidFire(SolDropTargets)
-	log.Debugln("Drop Targets reset")
 	goflip.LampOff(p.goalBonusLights...)
 	goflip.LampOff(Lmp25000Bonus)
 	utils.SetPlayerStat(game.CurrentPlayer, GoalTargetCount, 0)
