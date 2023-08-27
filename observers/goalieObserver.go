@@ -39,7 +39,7 @@ func (p *GoalieObserver) Init() {
 	p.movePosition = utils.Settings().Goalie.CenterPosition
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
-	log.Debugln("GoalieObserver:Init called")
+	log.Traceln("GoalieObserver:Init called")
 	p.moveGoalie()
 }
 
@@ -54,6 +54,13 @@ func (p *GoalieObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	}
 
 	switch sw.SwitchID {
+	case SwTopLeftLane:
+		fallthrough
+	case SwTopMiddleLane:
+		fallthrough
+	case SwTopRightLane:
+		p.movePosition = utils.Settings().Goalie.RightPosition
+		p.move = true
 	case SwLeftTarget:
 		fallthrough
 	case SwOuterLeftLane:
@@ -61,7 +68,7 @@ func (p *GoalieObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	case SwMiddleLeftLane:
 		fallthrough
 	case SwInnerLeftLane:
-		log.Debugln("GoalieObserver: Moving Left")
+		log.Traceln("GoalieObserver: Moving Left")
 		p.movePosition = utils.Settings().Goalie.LeftPosition
 		p.move = true
 	case SwInnerRightLane:
@@ -75,7 +82,7 @@ func (p *GoalieObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	case SwMiddleRightTarget:
 		fallthrough
 	case SwUpperRightTarget:
-		log.Debugln("GoalieObserver: Moving Right")
+		log.Traceln("GoalieObserver: Moving Right")
 		p.movePosition = utils.Settings().Goalie.RightPosition
 		p.move = true
 	default:
