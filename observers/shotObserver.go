@@ -197,6 +197,7 @@ func (s *ShotObserver) BallDrained() {
 }
 
 func (s *ShotObserver) PlayerUp(playerID int) {
+	s.clearShotStates()
 	game := goflip.GetMachine()
 	utils.SetPlayerStat(game.CurrentPlayer, BipShotCount, 0)
 	s.setMikeBossyLetters()

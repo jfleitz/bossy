@@ -39,9 +39,8 @@ func (p *GoalieObserver) Init() {
 	p.movePosition = utils.Settings().Goalie.CenterPosition
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
-	log.Debugln("GoalieObserver:Init called")
+	log.Traceln("GoalieObserver:Init called")
 	p.moveGoalie()
-
 }
 
 /*
@@ -54,41 +53,38 @@ func (p *GoalieObserver) SwitchHandler(sw goflip.SwitchEvent) {
 		return
 	}
 
-	if !utils.Settings().Goalie.DebugGoalie {
-		return
-	}
-
 	switch sw.SwitchID {
+	case SwTopLeftLane:
+		fallthrough
+	case SwTopMiddleLane:
+		fallthrough
+	case SwTopRightLane:
+		p.movePosition = utils.Settings().Goalie.RightPosition
+		p.move = true
 	case SwLeftTarget:
-		p.movePosition = utils.Settings().Goalie.TargetGLeft
-		break
+		fallthrough
 	case SwOuterLeftLane:
-		p.movePosition = utils.Settings().Goalie.TargetGLeft
-		break
+		fallthrough
 	case SwMiddleLeftLane:
-		p.movePosition = utils.Settings().Goalie.TargetGLeft
-		break
+		fallthrough
 	case SwInnerLeftLane:
-		p.movePosition = utils.Settings().Goalie.TargetGLeft
-		break
+		log.Traceln("GoalieObserver: Moving Left")
+		p.movePosition = utils.Settings().Goalie.LeftPosition
+		p.move = true
 	case SwInnerRightLane:
-		p.movePosition = utils.Settings().Goalie.TargetLRight
-		break
+		fallthrough
 	case SwMiddleRightLane:
-		p.movePosition = utils.Settings().Goalie.TargetLRight
-		break
+		fallthrough
 	case SwOuterRightLane:
-		p.movePosition = utils.Settings().Goalie.TargetLRight
-		break
+		fallthrough
 	case SwLowerRightTarget:
-		p.movePosition = utils.Settings().Goalie.TargetLRight
-		break
+		fallthrough
 	case SwMiddleRightTarget:
-		p.movePosition = utils.Settings().Goalie.TargetLRight
-		break
+		fallthrough
 	case SwUpperRightTarget:
-		p.movePosition = utils.Settings().Goalie.TargetLRight
-		break
+		log.Traceln("GoalieObserver: Moving Right")
+		p.movePosition = utils.Settings().Goalie.RightPosition
+		p.move = true
 	default:
 		return
 	}
@@ -106,7 +102,6 @@ playerID is the player that is now up
 */
 func (p *GoalieObserver) PlayerUp(playerID int) {
 	p.move = true
-
 }
 
 /*PlayerStart is called the very first time a player is playing (their first Ball1)
@@ -118,6 +113,7 @@ func (p *GoalieObserver) PlayerStart(playerID int) {
 /*PlayerEnd is called after the ball for the player is over)*/
 func (p *GoalieObserver) PlayerEnd(playerID int, wait *sync.WaitGroup) {
 	defer wait.Done()
+	p.movePosition = utils.Settings().Goalie.CenterPosition
 	p.move = false
 }
 
@@ -139,8 +135,8 @@ GameOver is called after the last player of the last ball is drained, before the
 into the GameOver mode
 */
 func (p *GoalieObserver) GameOver() {
-	goflip.ServoAngle(utils.Settings().Goalie.StartPosition)
-
+	p.movePosition = utils.Settings().Goalie.CenterPosition
+	p.move = false
 }
 
 /*GameStart is called whenever a new game is started*/
@@ -155,6 +151,10 @@ func (p *GoalieObserver) moveGoalie() {
 			goflip.ServoAngle(p.movePosition) //set to start pos
 
 			for {
+				game := goflip.GetMachine()
+				if game.Quitting {
+					return
+				}
 				if !p.move {
 					break
 				}
@@ -164,11 +164,8 @@ func (p *GoalieObserver) moveGoalie() {
 				//wait 2 seconds from moving, then move back to startpos
 				time.Sleep(2 * time.Second)
 				goflip.ServoAngle(p.movePosition)
-				game := goflip.GetMachine()
-				if game.Quitting {
-					return
-				}
 			}
+
 			time.Sleep(250 * time.Millisecond)
 		}
 	}()

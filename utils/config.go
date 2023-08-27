@@ -23,18 +23,9 @@ type Config struct {
 var conf *Config
 
 type GoalieConf struct {
-	StartPosition  int     `toml:"start_position"`
 	CenterPosition int     `toml:"center_position"`
-	LimitLeft      int     `toml:"limit_left"`
-	LimitRight     int     `toml:"limit_right"`
-	TargetGLeft    int     `toml:"target_g_left"`
-	TargetGRight   int     `toml:"target_g_right"`
-	TargetOLeft    int     `toml:"target_o_left"`
-	TargetORight   int     `toml:"target_o_right"`
-	TargetALeft    int     `toml:"target_a_left"`
-	TargetARight   int     `toml:"target_a_right"`
-	TargetLLeft    int     `toml:"target_l_left"`
-	TargetLRight   int     `toml:"target_l_right"`
+	LeftPosition   int     `toml:"left_position"`
+	RightPosition  int     `toml:"right_position"`
 	DeviceAddress  string  `toml:"device_address"`
 	PulseMin       float32 `toml:"pulse_min"`
 	PulseMax       float32 `toml:"pulse_max"`

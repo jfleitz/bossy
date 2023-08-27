@@ -64,10 +64,10 @@ const (
 	LmpLeftTarget                = 28
 	LmpMiddleRightTarget         = 29
 	LmpTopRightLane              = 31
-	Lmp5000Bonus1                = 33
-	Lmp5000Bonus2                = 34
-	Lmp5000Bonus3                = 35
-	Lmp5000Bonus4                = 36
+	Lmp5000G                     = 33
+	Lmp5000O                     = 48
+	Lmp5000A                     = 35
+	Lmp5000L                     = 36
 	LmpBonusSpotRight            = 38
 	LmpBottomRightGreenSpot      = 39
 	LmpGoalLight                 = 46
@@ -79,7 +79,8 @@ const (
 	LmpPlayer3                   = 63
 	LmpPlayer4                   = 64
 	//JAF Check these
-	Lmp25000Bonus           = 45
+	LmpRight25000Bonus      = 45
+	LmpLeft25000Bonus       = 11
 	LmpRightCompleteLetters = 38
 	LmpLeftCompleteLetters  = 37
 
@@ -89,6 +90,9 @@ const (
 	LmpPeriod              = 53
 	LmpMatch               = 38
 	LmpHighScore           = 41
+
+	//Not used yet?
+	LmpOvertimeBossySaucer = 42
 )
 
 // Solenoids
@@ -136,7 +140,7 @@ Sounds for Bossy:
 2 = up then down tone - like crowd doing the wave? (maybe on ball launch have this?)
 3 = icing / asteroids fire -- pop bumpers and sling shots (defense)
 4 = reset
-5 = whistle, up and down tone, and asteroids icing (end of game)
+5 = whistle, up and down tone, and asteroids icing (goal)
 6 = n/a
 7 = whistle only - ball drain, and 2 for ball launch?
 8 = low tones (bouncing ball..) - outlanes?
@@ -176,7 +180,6 @@ const (
 	SndGoalie           = 8
 	SndGoalTarget       = 5
 	SndTargets          = 9
-	SndLitPuck          = 2
 	SndLettersCompleted = 12
 	SndLetterAdded      = 7
 	SndLetterBonus      = 11

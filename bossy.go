@@ -137,7 +137,7 @@ func switchHandler(sw goflip.SwitchEvent) {
 		return
 	}
 
-	log.Debugf("Bossy switchHandler. Receivied SwitchID=%d Pressed=%v\n", sw.SwitchID, sw.Pressed)
+	log.Tracef("Bossy switchHandler. Receivied SwitchID=%d Pressed=%v\n", sw.SwitchID, sw.Pressed)
 
 	if goflip.GetGameState() == goflip.GameEnded {
 		//only care about switches that matter when a game is not running
@@ -156,7 +156,7 @@ func switchHandler(sw goflip.SwitchEvent) {
 	switch sw.SwitchID {
 	case observer.SwOuthole:
 		//ball over
-		log.Debugln("outhole: switch pressed")
+		log.Traceln("outhole: switch pressed")
 		goflip.BallDrained()
 
 	case observer.SwCredit:
@@ -238,6 +238,7 @@ func switchHandler(sw goflip.SwitchEvent) {
 func saucerControl() {
 	//JAF TODO: If BossyBonusFromGoal is set, then start the timer to hit a goal and then collect the bonus
 	go func() {
+		time.Sleep(1 * time.Second)
 		goflip.PlaySound(observer.SndSaucer)
 		time.Sleep(2 * time.Second)
 		game := goflip.GetMachine()

@@ -198,19 +198,19 @@ PlayerUp is called after the ball is launched from the Ball Trough for the next 
 playerID is the player that is now up
 */
 func (p *DiagObserver) PlayerUp(playerID int) {
-	log.Debugln("DiagObserver:PlayerUp()")
+	log.Traceln("DiagObserver:PlayerUp()")
 }
 
 /*PlayerEnd is called after every ball for the player is over*/
 func (p *DiagObserver) PlayerEnd(playerID int, wait *sync.WaitGroup) {
 	defer wait.Done()
-	log.Debugln("DiagObserver:PlayerEnd()")
+	log.Traceln("DiagObserver:PlayerEnd()")
 }
 
 /*PlayerStart is called the very first time a player is playing (their first Ball1)
  */
 func (p *DiagObserver) PlayerStart(playerID int) {
-	log.Debugln("DiagObserver:PlayerStart()")
+	log.Traceln("DiagObserver:PlayerStart()")
 }
 
 /*
@@ -218,12 +218,12 @@ PlayerEnd is called after the very last ball for the player is over
 (after ball 3 for example)
 */
 func (p *DiagObserver) PlayerFinish(playerID int) {
-	log.Debugln("DiagObserver:PlayerFinish()")
+	log.Traceln("DiagObserver:PlayerFinish()")
 }
 
 /*PlayerAdded is called after a player is added by the credit button, and after the GameStart event*/
 func (p *DiagObserver) PlayerAdded(playerID int) {
-	log.Debugln("DiagObserver:PlayerAdded()")
+	log.Traceln("DiagObserver:PlayerAdded()")
 }
 
 /*
@@ -231,10 +231,10 @@ GameOver is called after the last player of the last ball is drained, before the
 into the GameOver mode
 */
 func (p *DiagObserver) GameOver() {
-	log.Debugln("DiagObserver:GameOver()")
+	log.Traceln("DiagObserver:GameOver()")
 }
 
 /*GameStart is called whenever a new game is started*/
 func (p *DiagObserver) GameStart() {
-	log.Debugln("DiagObserver:GameStart()")
+	log.Traceln("DiagObserver:GameStart()")
 }

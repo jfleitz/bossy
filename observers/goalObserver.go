@@ -35,14 +35,7 @@ is called only once:
 func (p *GoalObserver) Init() {
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
-	log.Debugln("GoalObserver:Init called")
-
-	p.goalBonusLights = []int{
-		Lmp5000Bonus1,
-		Lmp5000Bonus2,
-		Lmp5000Bonus3,
-		Lmp5000Bonus4,
-	}
+	log.Traceln("GoalObserver:Init called")
 }
 
 /*
@@ -55,17 +48,20 @@ func (p *GoalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 		return
 	}
 
+	if goflip.GetGameState() != goflip.InProgress {
+		return
+	}
+
 	switch sw.SwitchID {
 	case SwTargetG:
-		break
+		goflip.LampOn(Lmp5000G)
 	case SwTargetO:
-		break
+		goflip.LampOn(Lmp5000O)
 	case SwTargetA:
-		break
+		goflip.LampOn(Lmp5000A)
 	case SwTargetL:
-		break
+		goflip.LampOn(Lmp5000L)
 	case SwBackGoal:
-		break
 	default:
 		return
 	}
@@ -78,6 +74,8 @@ func (p *GoalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	allTargets := goflip.SwitchPressed(SwTargetG) && goflip.SwitchPressed((SwTargetO)) &&
 		goflip.SwitchPressed(SwTargetA) && goflip.SwitchPressed(SwTargetL)
 	//keep track of the G O A L targets, and reset the bank afterwards. Also light the 5k bonus
+
+	log.Debugf("GoalObserver: AllTargets is %v", allTargets)
 
 	//flash the goal light and reset target bank
 	go func() {
@@ -93,14 +91,10 @@ func (p *GoalObserver) SwitchHandler(sw goflip.SwitchEvent) {
 	if allTargets {
 
 		cnt := utils.IncPlayerStat(game.CurrentPlayer, GoalTargetCount)
-		log.Debugf("All targets down. goal count is now %d\n", cnt)
+		log.Tracef("All targets down. goal count is now %d\n", cnt)
 		if cnt >= 5 {
-			goflip.LampOn(Lmp25000Bonus)
+			goflip.LampOn(LmpRight25000Bonus)
 			cnt -= 5
-		}
-
-		if cnt < 5 {
-			goflip.LampOn(p.goalBonusLights[cnt-1])
 		}
 	}
 
@@ -120,11 +114,8 @@ playerID is the player that is now up
 func (p *GoalObserver) PlayerUp(playerID int) {
 	game := goflip.GetMachine()
 
-	log.Debugln("Firing Drop Targets")
-	goflip.SolenoidFire(SolDropTargets)
-	log.Debugln("Drop Targets reset")
 	goflip.LampOff(p.goalBonusLights...)
-	goflip.LampOff(Lmp25000Bonus)
+	goflip.LampOff(LmpLeft25000Bonus, LmpRight25000Bonus)
 	utils.SetPlayerStat(game.CurrentPlayer, GoalTargetCount, 0)
 	utils.SetPlayerStat(game.CurrentPlayer, TotalGoalCount, 0)
 }

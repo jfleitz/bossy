@@ -36,7 +36,7 @@ is called only once:
 func (p *CollectOvertime) Init() {
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
-	log.Debugln("CollectOvertime:Init called")
+	log.Traceln("CollectOvertime:Init called")
 
 }
 

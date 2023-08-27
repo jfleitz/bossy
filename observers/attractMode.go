@@ -47,18 +47,18 @@ is called only once:
 func (a *AttractMode) Init() {
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
-	log.Debugln("AttractMode:Init called")
+	log.Traceln("AttractMode:Init called")
 
-	a.bottom = []int{LmpBottomLeftSpecial, LmpBottomRightGreenSpot, LmpBottomRightSpecial, LmpSamePlayerShootAgain} //jaf todo need bottom left green spot
-	a.bonus5000Points = []int{Lmp5000Bonus1, Lmp5000Bonus2, Lmp5000Bonus3, Lmp5000Bonus4}
-	a.bottom25kOvertime = []int{Lmp25000Bonus, LmpLeftReturnLaneOrangeSpot, LmpRightReturnLaneOrangeSpot}
+	a.bottom = []int{LmpBottomLeftSpecial, LmpBottomRightGreenSpot, LmpBottomRightSpecial} //jaf todo need bottom left green spot
+	a.bonus5000Points = []int{Lmp5000G, Lmp5000O, Lmp5000A, Lmp5000L}
+	a.bottom25kOvertime = []int{LmpRight25000Bonus, LmpLeft25000Bonus, LmpLeftReturnLaneOrangeSpot, LmpRightReturnLaneOrangeSpot}
 	a.completedLetters = []int{LmpLeftCompleteLetters, LmpRightCompleteLetters}
 	a.bossyLetters = []int{LmpLetterB, LmpLetterO, LmpLetterS1, LmpLetterS2, LmpLetterY}
 	a.mikeLetters = []int{LmpLetterM, LmpLetterI, LmpLetterK, LmpLetterE}
 	a.next1 = []int{LmpPointLaneWhiteSpot, LmpBottomTargetWhiteSpot}
 	a.next2 = []int{LmpPointLaneSpecial, LmpMiddleRightTarget, LmpTargetsOrangeSpot}
 	a.next3 = []int{LmpLeftTarget, LmpTopTargetWhiteSpot}
-	a.next4 = []int{LmpOvertimeLeftOfGoal} //need saucer
+	a.next4 = []int{LmpOvertimeLeftOfGoal, LmpOvertimeBossySaucer}
 	a.next5 = []int{LmpGoalOnLeftOrangeSpot, LmpGoalieWhiteSpot}
 	a.topLanes = []int{LmpTopLeftLane, LmpTopMiddleLane, LmpTopRightLane}
 	a.goalAndOvetime = []int{LmpGoalLight, LmpTopOrangeSpot}
@@ -112,12 +112,12 @@ GameOver is called after the last player of the last ball is drained, before the
 into the GameOver mode
 */
 func (a *AttractMode) GameOver() {
-	log.Debugln("AttractMode:GameOver()")
+	log.Traceln("AttractMode:GameOver()")
 
 	go func() {
 		for {
 			if goflip.GetGameState() != goflip.GameEnded {
-				return
+				break
 			}
 
 			a.controlLights(a.bottom, false, eachSetTimeOn, false)
@@ -149,15 +149,16 @@ func (a *AttractMode) GameOver() {
 			a.offLights(a.bonus5000Points, eachSetTimeOn)
 			a.offLights(a.bottom, eachSetTimeOn)
 			time.Sleep(500 * time.Millisecond)
-
 		}
+
+		a.resetStartOfGame()
 	}()
 
 }
 
 /*GameStart is called whenever a new game is started*/
 func (a *AttractMode) GameStart() {
-	log.Debugln("AttractMode:GameStart()")
+	log.Traceln("AttractMode:GameStart()")
 }
 
 func (a *AttractMode) controlLights(lights []int, blink bool, duration int, offAfter bool) {
@@ -176,4 +177,15 @@ func (a *AttractMode) controlLights(lights []int, blink bool, duration int, offA
 func (a *AttractMode) offLights(lights []int, wait int) {
 	goflip.LampOff(lights...)
 	time.Sleep(time.Duration(wait) * time.Millisecond)
+}
+
+func (a *AttractMode) resetStartOfGame() {
+	//reset whatever lights etc. for when a game starts
+
+	resetShotLights := []int{LmpTopLeftLane, LmpTopMiddleLane, LmpTopRightLane,
+		LmpLeftTarget, LmpPointLaneWhiteSpot, LmpTopTargetWhiteSpot,
+		LmpMiddleRightTarget, LmpBottomTargetWhiteSpot, LmpOvertimeLeftOfGoal}
+
+	goflip.LampOn(resetShotLights...)
+
 }
