@@ -44,7 +44,7 @@ func (p *EndOfBallBonus) Init() {
 	}
 
 	p.completedLetters = []int{LmpLeftCompleteLetters, LmpRightCompleteLetters}
-	p.bonus5000Points = []int{Lmp5000Bonus1, Lmp5000Bonus2, Lmp5000Bonus3, Lmp5000Bonus4}
+	p.bonus5000Points = []int{Lmp5000G, Lmp5000O, Lmp5000A, Lmp5000L}
 
 }
 
@@ -66,7 +66,7 @@ PlayerUp is called after the ball is launched from the Ball Trough for the next 
 playerID is the player that is now up
 */
 func (p *EndOfBallBonus) PlayerUp(playerID int) {
-
+	goflip.LampOff(Lmp5000G, Lmp5000O, Lmp5000A, Lmp5000L)
 }
 
 /*PlayerStart is called the very first time a player is playing (their first Ball1)
@@ -122,14 +122,21 @@ func (p *EndOfBallBonus) PlayerEnd(playerID int, wait *sync.WaitGroup) {
 		}
 
 		//goal bonuses
+
+		//Turn on first all of the goal bonuses based on the score.
 		targetCount := utils.GetPlayerStat(game.CurrentPlayer, GoalTargetCount)
+		for i := 0; i < (targetCount % 5); i++ {
+			goflip.LampOn(p.bonus5000Points[i])
+		}
+		//now turn them off as we count down
+
 		for i := targetCount; i > 0; i-- {
 			goflip.AddScore(5000)
 			goflip.PlaySound(SndGoalBonus)
 			if i == 4 {
-				goflip.LampOff(Lmp25000Bonus)
+				goflip.LampOff(LmpLeft25000Bonus, LmpRight25000Bonus)
 			} else if i < 4 {
-				goflip.LampOff(p.bonus5000Points[i])
+				goflip.LampOff(p.bonus5000Points[i-1])
 			}
 			time.Sleep(500 * time.Millisecond)
 		}
