@@ -29,7 +29,7 @@ is called only once:
 func (p *BossyObserver) Init() {
 	/*using logrus package for logging. Best practice to call logging when
 	only necessary and not in routines that are called a lot*/
-	log.Debugln("bossyObserver:Init called")
+	log.Traceln("bossyObserver:Init called")
 
 }
 
@@ -59,20 +59,20 @@ func (p *BossyObserver) BallDrained() {
 		return
 	}
 
-	log.Debugln("bossyObsv:BallDrained()")
+	log.Traceln("bossyObsv:BallDrained()")
 	game := goflip.GetMachine()
 
 	if !inWarmUpPeriod {
-		log.Debugln("outhole: not in warm up period")
+		log.Traceln("outhole: not in warm up period")
 		if game.BallScore == 0 {
-			log.Debugln("0 points by ball. ejecting ball")
+			log.Traceln("0 points by ball. ejecting ball")
 			go BallLaunch()
 		} else {
 			goflip.ChangePlayerState(goflip.EndPlayer)
 		}
 	} else {
 		//go ahead and eject it again
-		log.Debugln("warmup period-firing solenoid")
+		log.Traceln("warmup period-firing solenoid")
 		go BallLaunch()
 	}
 }
@@ -104,7 +104,7 @@ func (p *BossyObserver) PlayerEnd(playerID int, wait *sync.WaitGroup) {
 /*PlayerStart is called the very first time a player is playing (their first Ball1)
  */
 func (p *BossyObserver) PlayerStart(playerID int) {
-	log.Debugln("bossyObsv:PlayerStart()")
+	log.Traceln("bossyObsv:PlayerStart()")
 
 }
 
@@ -113,7 +113,7 @@ PlayerFinish is called after the very last ball for the player is over
 (after ball 3 for example)
 */
 func (p *BossyObserver) PlayerFinish(playerID int) {
-	log.Debugf("bossyObsv:PlayerFinish: %d\n", playerID)
+	log.Tracef("bossyObsv:PlayerFinish: %d\n", playerID)
 }
 
 /*PlayerAdded is called after a player is added by the credit button, and after the GameStart event*/
